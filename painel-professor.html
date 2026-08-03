@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco WL — Painel do Professor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* =====================================================================
+     BANCO WL — token de design
+     Paleta: azul-marinho "livro-caixa" + selo dourado
+     Tipografia: Fraunces (marca/títulos), Inter (interface), IBM Plex Mono (valores)
+     ===================================================================== */
+  :root{
+    --navy-950:#0b1526;
+    --navy-900:#101f36;
+    --navy-800:#16294a;
+    --navy-700:#1e3559;
+    --paper:#f6f3ea;
+    --paper-dim:#e9e4d6;
+    --gold:#c9a227;
+    --gold-soft:#e4cd7a;
+    --gold-2:#dbb84a;
+    --ink:#101f36;
+    --ink-soft:#5a6472;
+    --green:#3f7d5c;
+    --red:#b0453b;
+    --radius:10px;
+    --shadow: 0 8px 30px rgba(11,21,38,0.25);
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;}
+  html,body{
+    background: var(--navy-950);
+    color: var(--paper);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  ::selection{ background: var(--gold); color: var(--navy-950); }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+  .brand{
+    font-family:'Fraunces',serif;
+    font-weight:700;
+    letter-spacing:0.01em;
+  }
+  a{ color: var(--gold-2); }
+
+  /* ---------- layout shells ---------- */
+  #app{ min-height:100vh; display:flex; flex-direction:column; }
+  .hidden{ display:none !important; }
+
+  header.topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 28px;
+    background: linear-gradient(180deg, var(--navy-900), var(--navy-950));
+    border-bottom: 1px solid rgba(201,162,39,0.25);
+  }
+  .wordmark{ display:flex; align-items:center; gap:12px; }
+  .seal{
+    width:38px; height:38px; border-radius:50%;
+    border:2px solid var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; color:var(--gold);
+    font-size:15px;
+    box-shadow: inset 0 0 0 3px rgba(201,162,39,0.12);
+  }
+  .wordmark h1{ font-size:20px; margin:0; color:var(--paper); }
+  .wordmark small{ display:block; color:var(--ink-soft); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; }
+  .topbar-right{ display:flex; align-items:center; gap:14px; font-size:13px; color:var(--ink-soft); }
+
+  button, .btn{
+    font-family:'Inter',sans-serif; font-size:14px; font-weight:600;
+    border:none; border-radius:7px; padding:9px 16px; cursor:pointer;
+    transition: transform .08s ease, background .15s ease;
+  }
+  button:active{ transform: scale(0.98); }
+  .btn-gold{ background: var(--gold); color: var(--navy-950); }
+  .btn-gold:hover{ background: var(--gold-2); }
+  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(246,243,234,0.25); }
+  .btn-ghost:hover{ border-color: var(--gold); color: var(--gold-2); }
+  .btn-danger{ background: transparent; color: var(--red); border:1px solid rgba(176,69,59,0.5); }
+  .btn-danger:hover{ background: rgba(176,69,59,0.12); }
+  .btn-small{ padding:6px 11px; font-size:12.5px; border-radius:6px; }
+  button:disabled{ opacity:0.45; cursor:not-allowed; }
+
+  input, select, textarea{
+    font-family:'Inter',sans-serif; font-size:14px;
+    background: var(--navy-800); color: var(--paper);
+    border:1px solid rgba(246,243,234,0.18); border-radius:7px;
+    padding:9px 11px; width:100%;
+  }
+  input:focus, select:focus, textarea:focus{
+    outline: 2px solid var(--gold); outline-offset:1px; border-color: var(--gold);
+  }
+  label{ font-size:12px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:5px; }
+  .field{ margin-bottom:14px; }
+
+  /* ---------- login ---------- */
+  #tela-login{
+    flex:1; display:flex; align-items:center; justify-content:center; padding:20px;
+  }
+  .login-card{
+    background: var(--navy-900);
+    border:1px solid rgba(201,162,39,0.3);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding:38px 34px;
+    width:100%; max-width:380px;
+  }
+  .login-card .seal{ margin:0 auto 18px; width:56px; height:56px; font-size:20px; }
+  .login-card h1{ text-align:center; margin:0 0 4px; font-size:24px; }
+  .login-card p.sub{ text-align:center; color:var(--ink-soft); font-size:13px; margin:0 0 26px; }
+  #erro-login{ color: var(--red); font-size:13px; margin-top:10px; min-height:16px; }
+
+  /* ---------- shell principal ---------- */
+  #tela-app{ flex:1; display:flex; }
+  aside.rail{
+    width:230px; flex-shrink:0;
+    background: var(--navy-900);
+    border-right:1px solid rgba(201,162,39,0.18);
+    padding:20px 14px; overflow-y:auto;
+  }
+  aside.rail h2{ font-size:11px; text-transform:uppercase; letter-spacing:0.09em; color:var(--ink-soft); margin:4px 8px 10px; }
+  .turma-item{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:10px 12px; border-radius:7px; cursor:pointer; margin-bottom:3px;
+    font-size:14px; color:var(--paper);
+  }
+  .turma-item:hover{ background: rgba(201,162,39,0.08); }
+  .turma-item.ativa{ background: rgba(201,162,39,0.16); color: var(--gold-2); font-weight:600; }
+  .turma-item .n{ font-size:11px; color:var(--ink-soft); }
+
+  main.conteudo{ flex:1; padding:26px 32px; overflow-y:auto; }
+
+  .barra-titulo{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
+  .barra-titulo h2{ font-family:'Fraunces',serif; font-size:22px; margin:0; }
+  .barra-titulo .resumo{ color: var(--ink-soft); font-size:13px; }
+  .barra-titulo .resumo .mono{ color: var(--gold-2); }
+
+  table.ledger{ width:100%; border-collapse:collapse; background: var(--navy-900); border-radius: var(--radius); overflow:hidden; }
+  table.ledger th{
+    text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--ink-soft); padding:12px 14px; border-bottom:1px solid rgba(201,162,39,0.2);
+  }
+  table.ledger td{ padding:12px 14px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:14px; vertical-align:middle; }
+  table.ledger tr:last-child td{ border-bottom:none; }
+  table.ledger tr:hover td{ background: rgba(201,162,39,0.04); }
+  .saldo{ font-weight:600; }
+  .acoes-linha{ display:flex; gap:6px; flex-wrap:wrap; }
+
+  .cartao{
+    background: var(--navy-900); border:1px solid rgba(201,162,39,0.18);
+    border-radius: var(--radius); padding:20px; margin-bottom:20px;
+  }
+  .cartao h3{ font-family:'Fraunces',serif; font-size:16px; margin:0 0 14px; color: var(--gold-2); }
+  .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .linha-form{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
+  .linha-form .field{ flex:1; min-width:160px; margin-bottom:0; }
+
+  /* ---------- modal ---------- */
+  .overlay{
+    position:fixed; inset:0; background: rgba(11,21,38,0.72);
+    display:flex; align-items:center; justify-content:center; padding:20px; z-index:50;
+  }
+  .modal{
+    background: var(--navy-900); border:1px solid rgba(201,162,39,0.3);
+    border-radius: var(--radius); box-shadow: var(--shadow);
+    width:100%; max-width:440px; padding:26px;
+  }
+  .modal header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .modal header h3{ font-family:'Fraunces',serif; margin:0; font-size:18px; }
+  .fechar-x{ background:none; border:none; color:var(--ink-soft); font-size:20px; cursor:pointer; padding:0 4px; }
+  .erro-modal{ color: var(--red); font-size:13px; margin-top:8px; min-height:16px; }
+
+  /* extrato — estilo "recibo" com borda serrilhada */
+  .recibo{
+    background: var(--paper); color: var(--ink); border-radius:4px;
+    padding:16px 18px; max-height:340px; overflow-y:auto;
+    background-image: repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(16,31,54,0.08) 9px, rgba(16,31,54,0.08) 10px);
+    background-position: top; background-size: 100% 1px; background-repeat: no-repeat;
+  }
+  .recibo-linha{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed rgba(16,31,54,0.18); font-size:13px; }
+  .recibo-linha:last-child{ border-bottom:none; }
+  .recibo-linha .tipo{ font-weight:600; }
+  .recibo-linha .quando{ color:var(--ink-soft); font-size:11px; }
+  .valor-pos{ color: var(--green); }
+  .valor-neg{ color: var(--red); }
+
+  .toast{
+    position:fixed; bottom:24px; right:24px; background: var(--navy-800);
+    border:1px solid var(--gold); color: var(--paper); padding:12px 18px;
+    border-radius:8px; font-size:13.5px; box-shadow: var(--shadow); z-index:100;
+  }
+  .toast.erro{ border-color: var(--red); }
+
+  @media (max-width: 720px){
+    #tela-app{ flex-direction:column; }
+    aside.rail{ width:100%; border-right:none; border-bottom:1px solid rgba(201,162,39,0.18); }
+    .grid-2{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- =====================================================================
+     CONFIGURAÇÃO — edite apenas esta seção para ligar o painel ao seu
+     projeto Supabase. Não é preciso mexer em mais nada abaixo.
+     ===================================================================== -->
+<script>
+  const CONFIG = {
+    SUPABASE_URL: "https://qdleehomiwzyeinegoge.supabase.co",       // ex: https://xxxxx.supabase.co
+    SUPABASE_ANON_KEY: "sb_publishable_wHsFgwOuu5f9Oo7-oe805g_4W2n1s54" // encontrada em Project Settings > API
+  };
+</script>
+<!-- ===================================================================== -->
+
+<div id="app">
+
+  <header class="topbar">
+    <div class="wordmark">
+      <div class="seal">WL</div>
+      <div>
+        <h1 class="brand">Banco WL</h1>
+        <small>Painel do professor</small>
+      </div>
+    </div>
+    <div class="topbar-right hidden" id="info-usuario">
+      <span id="email-usuario"></span>
+      <button class="btn-ghost btn-small" id="btn-config">Configurações</button>
+      <button class="btn-ghost btn-small" id="btn-sair">Sair</button>
+    </div>
+  </header>
+
+  <!-- TELA DE LOGIN -->
+  <div id="tela-login">
+    <div class="login-card">
+      <div class="seal">WL</div>
+      <h1 class="brand">Acesso restrito</h1>
+      <p class="sub">Somente professores cadastrados podem entrar.</p>
+      <form id="form-login">
+        <div class="field">
+          <label>E-mail</label>
+          <input type="email" id="login-email" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="login-senha" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-gold" style="width:100%;">Entrar</button>
+        <div id="erro-login"></div>
+      </form>
+      <p style="font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:16px;">
+        <a href="index.html" style="color:var(--ink-soft);">Sou aluno</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- APP PRINCIPAL -->
+  <div id="tela-app" class="hidden">
+    <aside class="rail">
+      <h2>Turmas</h2>
+      <div id="lista-turmas"></div>
+      <form id="form-nova-turma" style="margin-top:16px;">
+        <div class="field">
+          <input type="text" id="nome-nova-turma" placeholder="Nova turma (ex: 7ºB)" required>
+        </div>
+        <button type="submit" class="btn-ghost btn-small" style="width:100%;">+ Adicionar turma</button>
+      </form>
+
+      <h2 style="margin-top:26px;">Rendimento</h2>
+      <div class="cartao" style="padding:14px;">
+        <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 12px;">
+          A taxa de cada aluno vem dos pacotes de juros (veja Configurações).
+        </p>
+        <button id="btn-render-manual" class="btn-gold btn-small" style="width:100%;">Aplicar rendimento manual</button>
+      </div>
+    </aside>
+
+    <main class="conteudo">
+      <div class="barra-titulo">
+        <h2 id="titulo-turma">Selecione uma turma</h2>
+        <div class="resumo" id="resumo-turma"></div>
+      </div>
+
+      <div class="cartao">
+        <div class="linha-form">
+          <div class="field" style="max-width:110px;">
+            <label>Número</label>
+            <input type="number" min="1" id="numero-novo-aluno" placeholder="Nº">
+          </div>
+          <div class="field" style="max-width:150px;">
+            <label>RA</label>
+            <input type="text" id="ra-novo-aluno" placeholder="Registro do aluno">
+          </div>
+          <div class="field">
+            <label>Nome do aluno</label>
+            <input type="text" id="nome-novo-aluno" placeholder="Nome completo">
+          </div>
+          <button id="btn-add-aluno" class="btn-ghost btn-small">+ Adicionar aluno</button>
+        </div>
+      </div>
+
+      <table class="ledger" id="tabela-alunos">
+        <thead>
+          <tr><th>Nº</th><th>Aluno</th><th>RA</th><th>Saldo</th><th>Rendimento</th><th style="text-align:right;">Ações</th></tr>
+        </thead>
+        <tbody id="corpo-alunos"></tbody>
+      </table>
+    </main>
+  </div>
+
+  <!-- TELA DE CONFIGURAÇÕES -->
+  <div id="tela-config" class="hidden" style="flex:1; padding:26px 32px; overflow-y:auto;">
+    <div class="barra-titulo">
+      <h2 class="brand">Configurações</h2>
+      <button class="btn-ghost btn-small" id="btn-voltar-app">← Voltar ao painel</button>
+    </div>
+
+    <div class="cartao">
+      <h3>Rendimento automático</h3>
+      <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:14px; color:var(--paper); margin-bottom:14px;">
+        <input type="checkbox" id="cfg-ativo-geral" style="width:auto;">
+        Aplicar rendimento automático todos os dias, com base nos pacotes de cada conta
+      </label>
+      <button id="btn-salvar-cfg-geral" class="btn-gold btn-small">Salvar</button>
+    </div>
+
+    <div class="cartao">
+      <h3>Pacotes de juros</h3>
+      <table class="ledger" style="margin-bottom:22px;">
+        <thead>
+          <tr><th>Nome</th><th>Tipo</th><th>Taxa diária</th><th>Duração</th><th style="text-align:right;">Ações</th></tr>
+        </thead>
+        <tbody id="corpo-pacotes"></tbody>
+      </table>
+
+      <h3 style="font-size:14px;">Novo pacote personalizado</h3>
+      <div class="grid-2">
+        <div class="field"><label>Nome do pacote</label><input type="text" id="novo-pacote-nome" placeholder="Ex: Bônus Feira de Ciências"></div>
+        <div class="field"><label>Taxa diária (%)</label><input type="number" step="0.01" id="novo-pacote-taxa" class="mono" placeholder="Ex: 0.20"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Duração</label>
+          <select id="novo-pacote-duracao-tipo">
+            <option value="dias">Por período (dias)</option>
+            <option value="permanente">Sem prazo (até remover manualmente)</option>
+          </select>
+        </div>
+        <div class="field" id="campo-duracao-dias">
+          <label>Quantidade de dias</label>
+          <input type="number" min="1" id="novo-pacote-dias" value="30">
+        </div>
+      </div>
+      <div class="field"><label>Descrição (opcional)</label><input type="text" id="novo-pacote-descricao"></div>
+      <button id="btn-criar-pacote" class="btn-ghost btn-small">+ Criar pacote</button>
+    </div>
+
+    <div class="cartao">
+      <h3>Atribuir pacote a alunos</h3>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+        Funciona para qualquer pacote, incluindo o Básico. Escolha a turma para atribuir a um aluno
+        específico ou à turma inteira, ou "Escola toda" para aplicar de uma vez a todos os alunos cadastrados.
+      </p>
+      <div class="grid-2">
+        <div class="field">
+          <label>Pacote</label>
+          <select id="atribuir-pacote-select"></select>
+        </div>
+        <div class="field">
+          <label>Escopo</label>
+          <select id="atribuir-turma-select"></select>
+        </div>
+      </div>
+      <div class="field" style="max-width:220px;">
+        <label>Início</label>
+        <input type="date" id="atribuir-data-inicio">
+      </div>
+      <div id="atribuir-lista-alunos" style="margin-bottom:14px; max-height:220px; overflow-y:auto; display:grid; gap:6px;"></div>
+      <button id="btn-atribuir-pacote" class="btn-gold btn-small">Atribuir aos selecionados</button>
+      <div class="erro-modal" id="atribuir-erro"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+const fmt = (n) => Number(n).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const $ = (id) => document.getElementById(id);
+
+let turmaAtualId = null;
+let alunosCache = [];
+let pacotesCache = [];
+let turmasCache = [];
+
+function toast(msg, erro=false){
+  const el = document.createElement('div');
+  el.className = 'toast' + (erro ? ' erro' : '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 3600);
+}
+
+// ---------------------------------------------------------------- LOGIN
+$('form-login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  $('erro-login').textContent = '';
+  const email = $('login-email').value.trim();
+  const senha = $('login-senha').value;
+  const { error } = await supabase.auth.signInWithPassword({ email, password: senha });
+  if (error) { $('erro-login').textContent = 'E-mail ou senha inválidos.'; return; }
+  await entrarNoApp();
+});
+
+$('btn-sair').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  location.reload();
+});
+
+async function entrarNoApp(){
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return;
+  $('tela-login').classList.add('hidden');
+  $('tela-app').classList.remove('hidden');
+  $('info-usuario').classList.remove('hidden');
+  $('email-usuario').textContent = session.user.email;
+  await carregarPacotesCache();
+  await carregarTurmas();
+}
+
+(async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  if (session) await entrarNoApp();
+})();
+
+async function carregarPacotesCache(){
+  const { data, error } = await supabase.from('pacotes_juros').select('*').order('tipo').order('nome');
+  if (error) { toast('Erro ao carregar pacotes: ' + error.message, true); return; }
+  pacotesCache = data || [];
+}
+
+// ---------------------------------------------------------------- NAVEGAÇÃO CONFIGURAÇÕES
+$('btn-config').addEventListener('click', async () => {
+  $('tela-app').classList.add('hidden');
+  $('tela-config').classList.remove('hidden');
+  await abrirTelaConfig();
+});
+
+$('btn-voltar-app').addEventListener('click', () => {
+  $('tela-config').classList.add('hidden');
+  $('tela-app').classList.remove('hidden');
+});
+
+$('novo-pacote-duracao-tipo').addEventListener('change', (e) => {
+  $('campo-duracao-dias').style.display = e.target.value === 'permanente' ? 'none' : '';
+});
+
+// ---------------------------------------------------------------- TURMAS
+async function carregarTurmas(){
+  const { data, error } = await supabase.from('turmas').select('*').order('nome');
+  if (error) { toast('Erro ao carregar turmas: ' + error.message, true); return; }
+  turmasCache = data;
+
+  const cont = $('lista-turmas');
+  cont.innerHTML = '';
+  for (const turma of data) {
+    const div = document.createElement('div');
+    div.className = 'turma-item' + (turma.id === turmaAtualId ? ' ativa' : '');
+    div.innerHTML = `<span>${turma.nome}</span>`;
+    div.addEventListener('click', () => selecionarTurma(turma.id, turma.nome));
+    cont.appendChild(div);
+  }
+
+  if (!turmaAtualId && data.length) await selecionarTurma(data[0].id, data[0].nome);
+}
+
+$('form-nova-turma').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const nome = $('nome-nova-turma').value.trim();
+  if (!nome) return;
+  const { error } = await supabase.from('turmas').insert({ nome });
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  $('nome-nova-turma').value = '';
+  await carregarTurmas();
+  toast('Turma criada.');
+});
+
+async function selecionarTurma(id, nome){
+  turmaAtualId = id;
+  $('titulo-turma').textContent = nome;
+  document.querySelectorAll('.turma-item').forEach(el => el.classList.remove('ativa'));
+  await carregarTurmas();
+  await carregarAlunos();
+}
+
+// ---------------------------------------------------------------- ALUNOS
+async function carregarAlunos(){
+  if (!turmaAtualId) return;
+  const { data, error } = await supabase
+    .from('alunos')
+    .select('id, nome, numero, ra, contas(id, saldo)')
+    .eq('turma_id', turmaAtualId)
+    .order('numero', { ascending: true, nullsFirst: false })
+    .order('nome');
+
+  if (error) { toast('Erro ao carregar alunos: ' + error.message, true); return; }
+  alunosCache = data;
+
+  const contaIds = alunosCache.map(a => a.contas?.id).filter(Boolean);
+  let taxas = [], pacotesAtivos = [];
+  if (contaIds.length) {
+    const [respTaxas, respPacotes] = await Promise.all([
+      supabase.from('vw_taxa_efetiva_conta').select('*').in('conta_id', contaIds),
+      supabase.from('vw_pacotes_ativos_conta').select('*').in('conta_id', contaIds)
+    ]);
+    taxas = respTaxas.data || [];
+    pacotesAtivos = respPacotes.data || [];
+  }
+
+  for (const aluno of alunosCache) {
+    const contaId = aluno.contas?.id;
+    aluno._taxa = taxas.find(t => t.conta_id === contaId) || { taxa_total: 0 };
+    aluno._pacotes = pacotesAtivos.filter(p => p.conta_id === contaId);
+  }
+
+  renderAlunos();
+}
+
+function renderAlunos(){
+  const corpo = $('corpo-alunos');
+  corpo.innerHTML = '';
+  let total = 0;
+
+  for (const aluno of alunosCache) {
+    const saldo = aluno.contas?.saldo ?? 0;
+    total += Number(saldo);
+    const taxaTotal = Number(aluno._taxa?.taxa_total ?? 0);
+
+    const tagsPacotes = (aluno._pacotes || []).map(p => `
+      <span class="mono" style="display:inline-flex; align-items:center; gap:4px; background:rgba(201,162,39,0.14); color:var(--gold-2); border-radius:5px; padding:2px 7px; font-size:11px; margin:2px 4px 0 0;">
+        ${p.nome} (+${Number(p.taxa_diaria)}%)
+        <button data-remover-pacote="${p.conta_pacote_id}" title="Remover" style="background:none; border:none; color:var(--gold-2); cursor:pointer; padding:0; font-size:12px;">✕</button>
+      </span>`).join('');
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="mono">${aluno.numero ?? '—'}</td>
+      <td>${aluno.nome}</td>
+      <td class="mono">${aluno.ra ?? '—'}</td>
+      <td class="mono saldo">${fmt(saldo)}</td>
+      <td>
+        <div class="mono" style="font-size:12.5px; color:var(--ink-soft);">${taxaTotal.toFixed(2)}%/dia</div>
+        <div>${tagsPacotes}</div>
+      </td>
+      <td>
+        <div class="acoes-linha">
+          <button class="btn-ghost btn-small" data-acao="depositar">Depositar</button>
+          <button class="btn-ghost btn-small" data-acao="sacar">Sacar</button>
+          <button class="btn-ghost btn-small" data-acao="transferir">Transferir</button>
+          <button class="btn-ghost btn-small" data-acao="pacote">+ Pacote</button>
+          <button class="btn-ghost btn-small" data-acao="senha">Senha</button>
+          <button class="btn-ghost btn-small" data-acao="editar">Editar</button>
+          <button class="btn-ghost btn-small" data-acao="extrato">Extrato</button>
+        </div>
+      </td>`;
+    tr.querySelectorAll('button[data-acao]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.dataset.acao === 'editar') { editarAluno(aluno); return; }
+        abrirModal(btn.dataset.acao, aluno);
+      });
+    });
+    tr.querySelectorAll('button[data-remover-pacote]').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        e.stopPropagation();
+        const { error } = await supabase.rpc('fn_remover_pacote_conta', { p_conta_pacote_id: btn.dataset.removerPacote });
+        if (error) { toast('Erro: ' + error.message, true); return; }
+        await carregarAlunos();
+        toast('Pacote removido do aluno.');
+      });
+    });
+    corpo.appendChild(tr);
+  }
+
+  $('resumo-turma').innerHTML = `${alunosCache.length} aluno(s) · saldo total <span class="mono">${fmt(total)}</span>`;
+}
+
+$('btn-add-aluno').addEventListener('click', async () => {
+  const nome = $('nome-novo-aluno').value.trim();
+  const numeroTexto = $('numero-novo-aluno').value.trim();
+  const numero = numeroTexto === '' ? null : parseInt(numeroTexto, 10);
+  const ra = $('ra-novo-aluno').value.trim() || null;
+  if (!nome || !turmaAtualId) return;
+  const { error } = await supabase.from('alunos').insert({ nome, numero, ra, turma_id: turmaAtualId });
+  if (error) {
+    toast(error.code === '23505' ? 'Erro: esse número ou RA já está em uso.' : 'Erro: ' + error.message, true);
+    return;
+  }
+  $('nome-novo-aluno').value = '';
+  $('numero-novo-aluno').value = '';
+  $('ra-novo-aluno').value = '';
+  await carregarAlunos();
+  toast('Aluno cadastrado.');
+});
+
+async function editarAluno(aluno){
+  const novoNome = prompt('Nome do aluno:', aluno.nome);
+  if (novoNome === null) return;
+  const novoNumeroTexto = prompt('Número (deixe em branco para nenhum):', aluno.numero ?? '');
+  if (novoNumeroTexto === null) return;
+  const novoRa = prompt('RA (deixe em branco para nenhum):', aluno.ra ?? '');
+  if (novoRa === null) return;
+
+  const atualizacao = {
+    nome: novoNome.trim() || aluno.nome,
+    numero: novoNumeroTexto.trim() === '' ? null : parseInt(novoNumeroTexto, 10),
+    ra: novoRa.trim() === '' ? null : novoRa.trim()
+  };
+
+  const { error } = await supabase.from('alunos').update(atualizacao).eq('id', aluno.id);
+  if (error) {
+    toast(error.code === '23505' ? 'Erro: esse número ou RA já está em uso.' : 'Erro: ' + error.message, true);
+    return;
+  }
+  await carregarAlunos();
+  toast('Aluno atualizado.');
+}
+
+// ---------------------------------------------------------------- MODAIS
+function abrirModal(tipo, aluno){
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+
+  const titulos = { depositar:'Depositar', sacar:'Sacar', transferir:'Transferir', extrato:'Extrato', pacote:'Atribuir pacote', senha:'Definir senha do aluno' };
+
+  let corpo = '';
+  if (tipo === 'senha') {
+    corpo = `
+      <p style="font-size:12.5px; color:var(--ink-soft); margin-top:0;">
+        O aluno usa o RA${aluno.ra ? ` <strong class="mono">${aluno.ra}</strong>` : ''} e esta senha para consultar
+        o extrato em uma página separada. ${aluno.ra ? '' : 'Cadastre o RA do aluno antes de definir a senha.'}
+      </p>
+      <div class="field"><label>Nova senha</label><input type="password" id="modal-senha-valor" minlength="4"></div>
+      <div class="field"><label>Confirmar senha</label><input type="password" id="modal-senha-confirma" minlength="4"></div>
+      <button class="btn-gold" id="modal-confirmar" style="width:100%;" ${aluno.ra ? '' : 'disabled'}>Salvar senha</button>
+      <div class="erro-modal" id="modal-erro"></div>`;
+  } else if (tipo === 'pacote') {
+    const disponiveis = pacotesCache.filter(p => p.ativo);
+    if (!disponiveis.length) {
+      corpo = `<p style="font-size:13.5px; color:var(--ink-soft);">Nenhum pacote criado ainda. Crie um em Configurações.</p>`;
+    } else {
+      corpo = `
+        <div class="field">
+          <label>Pacote</label>
+          <select id="modal-pacote-select">${disponiveis.map(p => `<option value="${p.id}">${p.nome}${p.tipo === 'base' ? ' (Básico)' : ''} (+${p.taxa_diaria}%/dia${p.duracao_dias ? ', ' + p.duracao_dias + ' dias' : ', sem prazo'})</option>`).join('')}</select>
+        </div>
+        <div class="field"><label>Início</label><input type="date" id="modal-pacote-inicio" value="${new Date().toISOString().slice(0,10)}"></div>
+        <button class="btn-gold" id="modal-confirmar" style="width:100%;">Atribuir pacote</button>
+        <div class="erro-modal" id="modal-erro"></div>`;
+    }
+  } else if (tipo === 'depositar' || tipo === 'sacar') {
+    corpo = `
+      <div class="field"><label>Valor</label><input type="number" step="0.01" min="0.01" id="modal-valor" class="mono"></div>
+      <div class="field"><label>Descrição (opcional)</label><input type="text" id="modal-descricao"></div>
+      <button class="btn-gold" id="modal-confirmar" style="width:100%;">Confirmar ${titulos[tipo].toLowerCase()}</button>
+      <div class="erro-modal" id="modal-erro"></div>`;
+  } else if (tipo === 'transferir') {
+    const outros = alunosCache.filter(a => a.id !== aluno.id);
+    corpo = `
+      <div class="field">
+        <label>Transferir para</label>
+        <select id="modal-destino">${outros.map(a => `<option value="${a.id}">${a.numero ? a.numero + ' — ' : ''}${a.nome}</option>`).join('')}</select>
+      </div>
+      <div class="field"><label>Valor</label><input type="number" step="0.01" min="0.01" id="modal-valor" class="mono"></div>
+      <div class="field"><label>Descrição (opcional)</label><input type="text" id="modal-descricao"></div>
+      <button class="btn-gold" id="modal-confirmar" style="width:100%;">Confirmar transferência</button>
+      <div class="erro-modal" id="modal-erro"></div>`;
+  } else if (tipo === 'extrato') {
+    corpo = `<div class="recibo" id="modal-extrato">Carregando...</div>`;
+  }
+
+  overlay.innerHTML = `
+    <div class="modal">
+      <header>
+        <h3>${titulos[tipo]} — ${aluno.nome}</h3>
+        <button class="fechar-x" id="modal-fechar">✕</button>
+      </header>
+      ${corpo}
+    </div>`;
+  document.body.appendChild(overlay);
+  $('modal-fechar').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+  if (tipo === 'extrato') { carregarExtrato(aluno.id); return; }
+  if (!$('modal-confirmar')) return; // ex: nenhum pacote personalizado disponível
+
+  $('modal-confirmar').addEventListener('click', async () => {
+    const erroEl = $('modal-erro');
+    erroEl.textContent = '';
+
+    if (tipo === 'pacote') {
+      const pacoteId = $('modal-pacote-select').value;
+      const dataInicio = $('modal-pacote-inicio').value;
+      const { error } = await supabase.rpc('fn_atribuir_pacote', {
+        p_pacote_id: pacoteId, p_aluno_ids: [aluno.id], p_data_inicio: dataInicio
+      });
+      if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
+      overlay.remove();
+      await carregarAlunos();
+      toast('Pacote atribuído ao aluno.');
+      return;
+    }
+
+    if (tipo === 'senha') {
+      const senha = $('modal-senha-valor').value;
+      const confirma = $('modal-senha-confirma').value;
+      if (senha.length < 4) { erroEl.textContent = 'A senha deve ter ao menos 4 caracteres.'; return; }
+      if (senha !== confirma) { erroEl.textContent = 'As senhas não conferem.'; return; }
+      const { error } = await supabase.rpc('fn_definir_senha_aluno', { p_aluno_id: aluno.id, p_senha: senha });
+      if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
+      overlay.remove();
+      toast('Senha definida para o aluno.');
+      return;
+    }
+
+    const valor = parseFloat($('modal-valor').value);
+    const descricao = $('modal-descricao').value.trim() || null;
+    if (!valor || valor <= 0) { erroEl.textContent = 'Informe um valor válido.'; return; }
+
+    let resp;
+    if (tipo === 'depositar') {
+      resp = await supabase.rpc('fn_depositar', { p_aluno_id: aluno.id, p_valor: valor, p_descricao: descricao });
+    } else if (tipo === 'sacar') {
+      resp = await supabase.rpc('fn_sacar', { p_aluno_id: aluno.id, p_valor: valor, p_descricao: descricao });
+    } else if (tipo === 'transferir') {
+      const destinoId = $('modal-destino').value;
+      resp = await supabase.rpc('fn_transferir', { p_aluno_origem_id: aluno.id, p_aluno_destino_id: destinoId, p_valor: valor, p_descricao: descricao });
+    }
+
+    if (resp.error) { erroEl.textContent = resp.error.message.replace(/^.*: /, ''); return; }
+    overlay.remove();
+    await carregarAlunos();
+    toast(`${titulos[tipo]} realizado com sucesso.`);
+  });
+}
+
+async function carregarExtrato(alunoId){
+  const { data, error } = await supabase
+    .from('vw_extrato')
+    .select('*')
+    .eq('aluno_id', alunoId)
+    .order('criado_em', { ascending: false })
+    .limit(50);
+
+  const cont = $('modal-extrato');
+  if (error) { cont.textContent = 'Erro ao carregar extrato: ' + error.message; return; }
+  if (!data.length) { cont.textContent = 'Nenhuma movimentação ainda.'; return; }
+
+  const rotulos = {
+    deposito:'Depósito', saque:'Saque',
+    transferencia_enviada:'Transferência enviada', transferencia_recebida:'Transferência recebida',
+    rendimento_automatico:'Rendimento automático', rendimento_manual:'Rendimento manual'
+  };
+  const negativos = ['saque','transferencia_enviada'];
+
+  cont.innerHTML = data.map(t => {
+    const sinal = negativos.includes(t.tipo) ? '-' : '+';
+    const classe = negativos.includes(t.tipo) ? 'valor-neg' : 'valor-pos';
+    const quando = new Date(t.criado_em).toLocaleString('pt-BR');
+    return `<div class="recibo-linha">
+      <div>
+        <div class="tipo">${rotulos[t.tipo] || t.tipo}</div>
+        <div class="quando">${quando}${t.descricao ? ' · ' + t.descricao : ''}</div>
+      </div>
+      <div class="mono ${classe}">${sinal} ${fmt(t.valor)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ---------------------------------------------------------------- TELA DE CONFIGURAÇÕES
+async function abrirTelaConfig(){
+  await carregarConfigGeral();
+  await carregarPacotesCache();
+  renderTabelaPacotes();
+  popularSelectPacotes();
+  popularSelectTurmasAtribuir();
+}
+
+async function carregarConfigGeral(){
+  const { data, error } = await supabase.from('configuracoes').select('*').eq('id', 1).single();
+  if (error) { toast('Erro ao carregar configuração: ' + error.message, true); return; }
+  $('cfg-ativo-geral').checked = data.rendimento_automatico_ativo;
+}
+
+$('btn-salvar-cfg-geral').addEventListener('click', async () => {
+  const ativo = $('cfg-ativo-geral').checked;
+  const { error } = await supabase.from('configuracoes').update({ rendimento_automatico_ativo: ativo }).eq('id', 1);
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  toast('Configuração salva.');
+});
+
+// ---- Pacotes: listagem
+function renderTabelaPacotes(){
+  const corpo = $('corpo-pacotes');
+  corpo.innerHTML = '';
+  for (const p of pacotesCache) {
+    const duracaoTexto = p.tipo === 'base' ? '—' : (p.duracao_dias ? `${p.duracao_dias} dias` : 'Sem prazo');
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${p.nome}</td>
+      <td>${p.tipo === 'base' ? 'Básico (todos)' : 'Personalizado'}</td>
+      <td class="mono">${Number(p.taxa_diaria)}%</td>
+      <td>${duracaoTexto}</td>
+      <td>
+        <div class="acoes-linha" style="justify-content:flex-end;">
+          <button class="btn-ghost btn-small" data-editar="${p.id}">Editar</button>
+          ${p.tipo !== 'base' ? `<button class="btn-danger btn-small" data-excluir="${p.id}">Excluir</button>` : ''}
+        </div>
+      </td>`;
+    corpo.appendChild(tr);
+  }
+
+  corpo.querySelectorAll('button[data-editar]').forEach(btn => {
+    btn.addEventListener('click', () => editarPacote(btn.dataset.editar));
+  });
+  corpo.querySelectorAll('button[data-excluir]').forEach(btn => {
+    btn.addEventListener('click', () => excluirPacote(btn.dataset.excluir));
+  });
+}
+
+async function editarPacote(id){
+  const pacote = pacotesCache.find(p => p.id === id);
+  if (!pacote) return;
+  const novoNome = prompt('Nome do pacote:', pacote.nome);
+  if (novoNome === null) return;
+  const novaTaxaTexto = prompt('Taxa diária (%):', pacote.taxa_diaria);
+  if (novaTaxaTexto === null) return;
+  const novaTaxa = parseFloat(novaTaxaTexto);
+  if (isNaN(novaTaxa)) { toast('Taxa inválida.', true); return; }
+
+  const atualizacao = { nome: novoNome.trim() || pacote.nome, taxa_diaria: novaTaxa };
+
+  if (pacote.tipo !== 'base') {
+    const novaDuracaoTexto = prompt('Duração em dias (deixe em branco para sem prazo):', pacote.duracao_dias ?? '');
+    if (novaDuracaoTexto === null) return;
+    atualizacao.duracao_dias = novaDuracaoTexto.trim() === '' ? null : parseInt(novaDuracaoTexto, 10);
+  }
+
+  const { error } = await supabase.from('pacotes_juros').update(atualizacao).eq('id', id);
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  await carregarPacotesCache();
+  renderTabelaPacotes();
+  popularSelectPacotes();
+  toast('Pacote atualizado.');
+}
+
+async function excluirPacote(id){
+  const pacote = pacotesCache.find(p => p.id === id);
+  if (!confirm(`Excluir o pacote "${pacote?.nome}"? Isso não afeta atribuições já aplicadas, mas ele deixa de poder ser atribuído.`)) return;
+  const { error } = await supabase.from('pacotes_juros').delete().eq('id', id);
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  await carregarPacotesCache();
+  renderTabelaPacotes();
+  popularSelectPacotes();
+  toast('Pacote excluído.');
+}
+
+// ---- Pacotes: criação
+$('btn-criar-pacote').addEventListener('click', async () => {
+  const nome = $('novo-pacote-nome').value.trim();
+  const taxa = parseFloat($('novo-pacote-taxa').value);
+  const descricao = $('novo-pacote-descricao').value.trim() || null;
+  const duracaoTipo = $('novo-pacote-duracao-tipo').value;
+  const duracaoDias = duracaoTipo === 'permanente' ? null : parseInt($('novo-pacote-dias').value, 10);
+
+  if (!nome) { toast('Informe o nome do pacote.', true); return; }
+  if (isNaN(taxa)) { toast('Informe uma taxa válida.', true); return; }
+
+  const { error } = await supabase.from('pacotes_juros').insert({
+    nome, taxa_diaria: taxa, tipo: 'personalizado', duracao_dias: duracaoDias, descricao
+  });
+  if (error) { toast('Erro: ' + error.message, true); return; }
+
+  $('novo-pacote-nome').value = '';
+  $('novo-pacote-taxa').value = '';
+  $('novo-pacote-descricao').value = '';
+  await carregarPacotesCache();
+  renderTabelaPacotes();
+  popularSelectPacotes();
+  toast('Pacote criado.');
+});
+
+// ---- Atribuir pacote (aluno individual, turma ou escola toda)
+function popularSelectPacotes(){
+  const sel = $('atribuir-pacote-select');
+  const disponiveis = pacotesCache.filter(p => p.ativo);
+  sel.innerHTML = disponiveis.length
+    ? disponiveis.map(p => `<option value="${p.id}">${p.nome}${p.tipo === 'base' ? ' (Básico)' : ''} (+${p.taxa_diaria}%/dia)</option>`).join('')
+    : `<option value="">Nenhum pacote criado</option>`;
+}
+
+function popularSelectTurmasAtribuir(){
+  const sel = $('atribuir-turma-select');
+  sel.innerHTML = `<option value="todas">🏫 Escola toda (todas as turmas)</option>` +
+    turmasCache.map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+  $('atribuir-data-inicio').value = new Date().toISOString().slice(0,10);
+  carregarListaAlunosAtribuir('todas');
+  sel.onchange = () => carregarListaAlunosAtribuir(sel.value);
+}
+
+async function carregarListaAlunosAtribuir(escopo){
+  const cont = $('atribuir-lista-alunos');
+  cont.innerHTML = 'Carregando...';
+
+  let query = supabase.from('alunos').select('id, nome, numero, turmas(nome)')
+    .order('numero', { ascending: true, nullsFirst: false }).order('nome');
+  if (escopo !== 'todas') query = query.eq('turma_id', escopo);
+
+  const { data, error } = await query;
+  if (error) { cont.textContent = 'Erro ao carregar alunos.'; return; }
+
+  cont.innerHTML = `
+    <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:13px;">
+      <input type="checkbox" id="atribuir-selecionar-todos" style="width:auto;"> Selecionar todos${escopo === 'todas' ? ' (escola toda)' : ' (turma toda)'}
+    </label>` +
+    data.map(a => `
+      <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:13px;">
+        <input type="checkbox" class="atribuir-aluno-check" value="${a.id}" style="width:auto;">
+        ${a.numero ? `<span class="mono" style="color:var(--ink-soft);">${a.numero}</span>` : ''} ${a.nome}
+        ${escopo === 'todas' ? `<span style="color:var(--ink-soft); font-size:11px;">· ${a.turmas?.nome ?? ''}</span>` : ''}
+      </label>`).join('');
+
+  $('atribuir-selecionar-todos').addEventListener('change', (e) => {
+    cont.querySelectorAll('.atribuir-aluno-check').forEach(cb => cb.checked = e.target.checked);
+  });
+}
+
+$('btn-atribuir-pacote').addEventListener('click', async () => {
+  const erroEl = $('atribuir-erro');
+  erroEl.textContent = '';
+  const pacoteId = $('atribuir-pacote-select').value;
+  const dataInicio = $('atribuir-data-inicio').value;
+  const alunoIds = Array.from(document.querySelectorAll('.atribuir-aluno-check:checked')).map(cb => cb.value);
+
+  if (!pacoteId) { erroEl.textContent = 'Crie um pacote personalizado primeiro.'; return; }
+  if (!alunoIds.length) { erroEl.textContent = 'Selecione ao menos um aluno.'; return; }
+
+  const { error } = await supabase.rpc('fn_atribuir_pacote', {
+    p_pacote_id: pacoteId, p_aluno_ids: alunoIds, p_data_inicio: dataInicio
+  });
+  if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
+  toast(`Pacote atribuído a ${alunoIds.length} aluno(s).`);
+});
+
+// ---------------------------------------------------------------- RENDIMENTO MANUAL
+$('btn-render-manual').addEventListener('click', async () => {
+  const taxaTexto = prompt('Taxa de rendimento manual (%) a aplicar para a turma atual:\n(ex: 1 para +1%, -0.5 para -0,5%)');
+  if (taxaTexto === null) return;
+  const taxa = parseFloat(taxaTexto);
+  if (!taxa) { toast('Taxa inválida.', true); return; }
+
+  const { error } = await supabase.rpc('fn_aplicar_rendimento_manual', {
+    p_taxa: taxa,
+    p_turma_id: turmaAtualId,
+    p_descricao: 'Rendimento manual aplicado pelo professor'
+  });
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  await carregarAlunos();
+  toast(`Rendimento de ${taxa}% aplicado à turma.`);
+});
+</script>
+</body>
+</html>

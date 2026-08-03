@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banco WL — Consulta do Aluno</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0b1526; --navy-900:#101f36; --navy-800:#16294a;
+    --paper:#f6f3ea; --gold:#c9a227; --gold-2:#dbb84a;
+    --ink-soft:#5a6472; --green:#3f7d5c; --red:#b0453b;
+    --radius:10px; --shadow: 0 8px 30px rgba(11,21,38,0.25);
+  }
+  *{box-sizing:border-box;}
+  html,body{ margin:0; min-height:100vh; background: var(--navy-950); color: var(--paper); font-family:'Inter',sans-serif; }
+  .mono{ font-family:'IBM Plex Mono',monospace; }
+  .brand{ font-family:'Fraunces',serif; font-weight:700; }
+  .hidden{ display:none !important; }
+
+  #app{ min-height:100vh; display:flex; flex-direction:column; }
+  header.topbar{
+    display:flex; align-items:center; justify-content:space-between; padding:18px 24px;
+    background: linear-gradient(180deg, var(--navy-900), var(--navy-950));
+    border-bottom: 1px solid rgba(201,162,39,0.25);
+  }
+  .wordmark{ display:flex; align-items:center; gap:12px; }
+  .seal{
+    width:36px; height:36px; border-radius:50%; border:2px solid var(--gold);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-weight:700; color:var(--gold); font-size:14px;
+  }
+  .wordmark h1{ font-size:18px; margin:0; }
+  .wordmark small{ display:block; color:var(--ink-soft); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; }
+
+  button{
+    font-family:'Inter',sans-serif; font-size:14px; font-weight:600;
+    border:none; border-radius:7px; padding:10px 16px; cursor:pointer;
+  }
+  .btn-gold{ background: var(--gold); color: var(--navy-950); width:100%; }
+  .btn-gold:hover{ background: var(--gold-2); }
+  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(246,243,234,0.25); padding:7px 12px; font-size:12.5px; }
+  .btn-ghost:hover{ border-color: var(--gold); color: var(--gold-2); }
+
+  input{
+    font-family:'Inter',sans-serif; font-size:15px; background: var(--navy-800); color: var(--paper);
+    border:1px solid rgba(246,243,234,0.18); border-radius:7px; padding:10px 12px; width:100%;
+  }
+  input:focus{ outline: 2px solid var(--gold); outline-offset:1px; border-color: var(--gold); }
+  label{ font-size:12px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:5px; }
+  .field{ margin-bottom:16px; }
+
+  #tela-login{ flex:1; display:flex; align-items:center; justify-content:center; padding:20px; }
+  .login-card{
+    background: var(--navy-900); border:1px solid rgba(201,162,39,0.3); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding:36px 30px; width:100%; max-width:360px;
+  }
+  .login-card .seal{ margin:0 auto 16px; width:52px; height:52px; font-size:18px; }
+  .login-card h1{ text-align:center; margin:0 0 4px; font-size:22px; }
+  .login-card p.sub{ text-align:center; color:var(--ink-soft); font-size:13px; margin:0 0 24px; }
+  #erro-login{ color: var(--red); font-size:13px; margin-top:10px; min-height:16px; }
+
+  main.conteudo{ flex:1; padding:24px 20px; max-width:640px; margin:0 auto; width:100%; }
+
+  .cartao-saldo{
+    background: linear-gradient(135deg, var(--navy-900), var(--navy-800));
+    border:1px solid rgba(201,162,39,0.3); border-radius: var(--radius);
+    padding:24px; margin-bottom:20px; text-align:center;
+  }
+  .cartao-saldo .rotulo{ font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); }
+  .cartao-saldo .valor{ font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:600; color:var(--gold-2); margin:6px 0; }
+  .cartao-saldo .taxa{ font-size:13px; color:var(--paper); }
+
+  .cartao{
+    background: var(--navy-900); border:1px solid rgba(201,162,39,0.18); border-radius: var(--radius);
+    padding:18px 20px; margin-bottom:18px;
+  }
+  .cartao h3{ font-family:'Fraunces',serif; font-size:15px; margin:0 0 12px; color: var(--gold-2); }
+
+  .tag-pacote{
+    display:inline-block; background:rgba(201,162,39,0.14); color:var(--gold-2);
+    border-radius:6px; padding:6px 10px; font-size:12.5px; margin:0 6px 6px 0;
+  }
+
+  .recibo-linha{ display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13.5px; }
+  .recibo-linha:last-child{ border-bottom:none; }
+  .recibo-linha .quando{ color:var(--ink-soft); font-size:11px; }
+  .valor-pos{ color: var(--green); }
+  .valor-neg{ color: var(--red); }
+
+  .rodape-usuario{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .rodape-usuario .info{ font-size:13px; color:var(--ink-soft); }
+</style>
+</head>
+<body>
+
+<!-- =====================================================================
+     CONFIGURAÇÃO — mesma URL e chave usadas no painel do professor.
+     ===================================================================== -->
+<script>
+  const CONFIG = {
+    SUPABASE_URL: "COLE_AQUI_A_URL_DO_SEU_PROJETO_SUPABASE",
+    SUPABASE_ANON_KEY: "COLE_AQUI_A_CHAVE_ANON_PUBLIC_DO_SUPABASE"
+  };
+</script>
+<!-- ===================================================================== -->
+
+<div id="app">
+  <header class="topbar">
+    <div class="wordmark">
+      <div class="seal">WL</div>
+      <div>
+        <h1 class="brand">Banco WL</h1>
+        <small>Consulta do aluno</small>
+      </div>
+    </div>
+  </header>
+
+  <div id="tela-login">
+    <div class="login-card">
+      <div class="seal">WL</div>
+      <h1 class="brand">Minha conta</h1>
+      <p class="sub">Digite seu RA e sua senha para consultar seu extrato.</p>
+      <form id="form-login">
+        <div class="field">
+          <label>RA</label>
+          <input type="text" id="login-ra" required autocomplete="username">
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="login-senha" required autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn-gold">Entrar</button>
+        <div id="erro-login"></div>
+      </form>
+      <p style="font-size:12px; color:var(--ink-soft); text-align:center; margin-top:18px;">
+        Esqueceu a senha? Peça ao professor para redefinir.
+      </p>
+      <p style="font-size:11.5px; color:var(--ink-soft); text-align:center; margin-top:10px;">
+        <a href="painel-professor.html" style="color:var(--ink-soft);">Sou professor</a>
+      </p>
+    </div>
+  </div>
+
+  <main class="conteudo hidden" id="tela-conta">
+    <div class="rodape-usuario">
+      <div class="info" id="info-aluno"></div>
+      <button class="btn-ghost" id="btn-sair">Sair</button>
+    </div>
+
+    <div class="cartao-saldo">
+      <div class="rotulo">Saldo atual</div>
+      <div class="valor mono" id="valor-saldo">R$ 0,00</div>
+      <div class="taxa" id="valor-taxa"></div>
+    </div>
+
+    <div class="cartao">
+      <h3>Pacotes de juros ativos</h3>
+      <div id="lista-pacotes">—</div>
+    </div>
+
+    <div class="cartao">
+      <h3>Extrato de movimentações</h3>
+      <div id="lista-extrato">—</div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => Number(n).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+
+const rotulosTipo = {
+  deposito:'Depósito', saque:'Saque',
+  transferencia_enviada:'Transferência enviada', transferencia_recebida:'Transferência recebida',
+  rendimento_automatico:'Rendimento automático', rendimento_manual:'Rendimento manual'
+};
+const negativos = ['saque','transferencia_enviada'];
+
+$('form-login').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const erroEl = $('erro-login');
+  erroEl.textContent = '';
+  const ra = $('login-ra').value.trim();
+  const senha = $('login-senha').value;
+
+  const { data, error } = await supabase.rpc('fn_login_aluno', { p_ra: ra, p_senha: senha });
+  if (error) { erroEl.textContent = 'RA ou senha inválidos.'; return; }
+
+  sessionStorage.setItem('bancowl_ra', ra);
+  sessionStorage.setItem('bancowl_senha', senha);
+  renderDados(data);
+});
+
+$('btn-sair').addEventListener('click', () => {
+  sessionStorage.removeItem('bancowl_ra');
+  sessionStorage.removeItem('bancowl_senha');
+  $('tela-conta').classList.add('hidden');
+  $('tela-login').classList.remove('hidden');
+  $('login-ra').value = '';
+  $('login-senha').value = '';
+});
+
+function renderDados(data){
+  $('tela-login').classList.add('hidden');
+  $('tela-conta').classList.remove('hidden');
+
+  $('info-aluno').textContent = `${data.aluno.nome} · ${data.turma}${data.aluno.numero ? ' · Nº ' + data.aluno.numero : ''}`;
+  $('valor-saldo').textContent = fmt(data.saldo);
+  $('valor-taxa').textContent = `Rendimento atual: ${Number(data.taxa_diaria_total).toFixed(2)}%/dia`;
+
+  const pacotesEl = $('lista-pacotes');
+  pacotesEl.innerHTML = data.pacotes_ativos.length
+    ? data.pacotes_ativos.map(p => `<span class="tag-pacote">${p.nome} (+${p.taxa_diaria}%/dia${p.data_fim ? ', até ' + new Date(p.data_fim).toLocaleDateString('pt-BR') : ''})</span>`).join('')
+    : '<p style="color:var(--ink-soft); font-size:13.5px;">Nenhum pacote ativo no momento.</p>';
+
+  const extratoEl = $('lista-extrato');
+  extratoEl.innerHTML = data.extrato.length
+    ? data.extrato.map(t => {
+        const sinal = negativos.includes(t.tipo) ? '-' : '+';
+        const classe = negativos.includes(t.tipo) ? 'valor-neg' : 'valor-pos';
+        const quando = new Date(t.criado_em).toLocaleString('pt-BR');
+        return `<div class="recibo-linha">
+          <div>
+            <div>${rotulosTipo[t.tipo] || t.tipo}</div>
+            <div class="quando">${quando}${t.descricao ? ' · ' + t.descricao : ''}</div>
+          </div>
+          <div class="mono ${classe}">${sinal} ${fmt(t.valor)}</div>
+        </div>`;
+      }).join('')
+    : '<p style="color:var(--ink-soft); font-size:13.5px;">Nenhuma movimentação ainda.</p>';
+}
+
+// Mantém a sessão do aluno enquanto a aba estiver aberta
+(async () => {
+  const ra = sessionStorage.getItem('bancowl_ra');
+  const senha = sessionStorage.getItem('bancowl_senha');
+  if (!ra || !senha) return;
+
+  const { data, error } = await supabase.rpc('fn_login_aluno', { p_ra: ra, p_senha: senha });
+  if (error) {
+    sessionStorage.removeItem('bancowl_ra');
+    sessionStorage.removeItem('bancowl_senha');
+    return;
+  }
+  renderDados(data);
+})();
+</script>
+</body>
+</html>
