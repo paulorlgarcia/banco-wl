@@ -3,57 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banco WL — Consulta do Aluno</title>
+<title>WL Bank — Consulta do Aluno</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
-    --navy-950:#0b1526; --navy-900:#101f36; --navy-800:#16294a;
-    --paper:#f6f3ea; --gold:#c9a227; --gold-2:#dbb84a;
-    --ink-soft:#5a6472; --green:#3f7d5c; --red:#b0453b;
-    --radius:10px; --shadow: 0 8px 30px rgba(11,21,38,0.25);
+    --bg-950:#181233; --bg-900:#211a49; --bg-800:#2b2260;
+    --paper:#faf7ff; --sun:#ffc94d; --sun-2:#ffd873;
+    --coral:#ff7a59; --mint:#2dd4bf;
+    --ink-soft:#a79fd1; --green:#34d399; --red:#fb7185;
+    --radius:14px; --shadow: 0 8px 30px rgba(24,18,51,0.35);
   }
   *{box-sizing:border-box;}
-  html,body{ margin:0; min-height:100vh; background: var(--navy-950); color: var(--paper); font-family:'Inter',sans-serif; }
+  html,body{ margin:0; min-height:100vh; background: var(--bg-950); color: var(--paper); font-family:'Nunito',sans-serif; }
   .mono{ font-family:'IBM Plex Mono',monospace; }
-  .brand{ font-family:'Fraunces',serif; font-weight:700; }
+  .brand{ font-family:'Baloo 2',sans-serif; font-weight:700; }
   .hidden{ display:none !important; }
 
   #app{ min-height:100vh; display:flex; flex-direction:column; }
   header.topbar{
     display:flex; align-items:center; justify-content:space-between; padding:18px 24px;
-    background: linear-gradient(180deg, var(--navy-900), var(--navy-950));
-    border-bottom: 1px solid rgba(201,162,39,0.25);
+    background: linear-gradient(180deg, var(--bg-900), var(--bg-950));
+    border-bottom: 1px solid rgba(255,201,77,0.25);
   }
   .wordmark{ display:flex; align-items:center; gap:12px; }
   .seal{
-    width:36px; height:36px; border-radius:50%; border:2px solid var(--gold);
+    width:36px; height:36px; border-radius:50%; border:2px solid var(--sun);
     display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces',serif; font-weight:700; color:var(--gold); font-size:14px;
+    font-family:'Baloo 2',sans-serif; font-weight:700; color:var(--sun); font-size:14px;
   }
   .wordmark h1{ font-size:18px; margin:0; }
   .wordmark small{ display:block; color:var(--ink-soft); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; }
 
   button{
-    font-family:'Inter',sans-serif; font-size:14px; font-weight:600;
+    font-family:'Nunito',sans-serif; font-size:14px; font-weight:600;
     border:none; border-radius:7px; padding:10px 16px; cursor:pointer;
   }
-  .btn-gold{ background: var(--gold); color: var(--navy-950); width:100%; }
-  .btn-gold:hover{ background: var(--gold-2); }
-  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(246,243,234,0.25); padding:7px 12px; font-size:12.5px; }
-  .btn-ghost:hover{ border-color: var(--gold); color: var(--gold-2); }
+  .btn-gold{ background: var(--sun); color: var(--bg-950); width:100%; }
+  .btn-gold:hover{ background: var(--sun-2); }
+  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(250,247,255,0.25); padding:7px 12px; font-size:12.5px; }
+  .btn-ghost:hover{ border-color: var(--sun); color: var(--sun-2); }
 
   input{
-    font-family:'Inter',sans-serif; font-size:15px; background: var(--navy-800); color: var(--paper);
-    border:1px solid rgba(246,243,234,0.18); border-radius:7px; padding:10px 12px; width:100%;
+    font-family:'Nunito',sans-serif; font-size:15px; background: var(--bg-800); color: var(--paper);
+    border:1px solid rgba(250,247,255,0.18); border-radius:7px; padding:10px 12px; width:100%;
   }
-  input:focus{ outline: 2px solid var(--gold); outline-offset:1px; border-color: var(--gold); }
+  input:focus{ outline: 2px solid var(--sun); outline-offset:1px; border-color: var(--sun); }
   label{ font-size:12px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:5px; }
   .field{ margin-bottom:16px; }
 
   #tela-login{ flex:1; display:flex; align-items:center; justify-content:center; padding:20px; }
   .login-card{
-    background: var(--navy-900); border:1px solid rgba(201,162,39,0.3); border-radius: var(--radius);
+    background: var(--bg-900); border:1px solid rgba(255,201,77,0.3); border-radius: var(--radius);
     box-shadow: var(--shadow); padding:36px 30px; width:100%; max-width:360px;
   }
   .login-card .seal{ margin:0 auto 16px; width:52px; height:52px; font-size:18px; }
@@ -64,22 +65,22 @@
   main.conteudo{ flex:1; padding:24px 20px; max-width:640px; margin:0 auto; width:100%; }
 
   .cartao-saldo{
-    background: linear-gradient(135deg, var(--navy-900), var(--navy-800));
-    border:1px solid rgba(201,162,39,0.3); border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--bg-900), var(--bg-800));
+    border:1px solid rgba(255,201,77,0.3); border-radius: var(--radius);
     padding:24px; margin-bottom:20px; text-align:center;
   }
   .cartao-saldo .rotulo{ font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); }
-  .cartao-saldo .valor{ font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:600; color:var(--gold-2); margin:6px 0; }
+  .cartao-saldo .valor{ font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:600; color:var(--sun-2); margin:6px 0; }
   .cartao-saldo .taxa{ font-size:13px; color:var(--paper); }
 
   .cartao{
-    background: var(--navy-900); border:1px solid rgba(201,162,39,0.18); border-radius: var(--radius);
+    background: var(--bg-900); border:1px solid rgba(255,201,77,0.18); border-radius: var(--radius);
     padding:18px 20px; margin-bottom:18px;
   }
-  .cartao h3{ font-family:'Fraunces',serif; font-size:15px; margin:0 0 12px; color: var(--gold-2); }
+  .cartao h3{ font-family:'Baloo 2',sans-serif; font-size:15px; margin:0 0 12px; color: var(--sun-2); }
 
   .tag-pacote{
-    display:inline-block; background:rgba(201,162,39,0.14); color:var(--gold-2);
+    display:inline-block; background:rgba(255,201,77,0.14); color:var(--sun-2);
     border-radius:6px; padding:6px 10px; font-size:12.5px; margin:0 6px 6px 0;
   }
 
@@ -100,8 +101,8 @@
      ===================================================================== -->
 <script>
   const CONFIG = {
-    SUPABASE_URL: "https://qdleehomiwzyeinegoge.supabase.co",       // ex: https://xxxxx.supabase.co
-    SUPABASE_ANON_KEY: "sb_publishable_wHsFgwOuu5f9Oo7-oe805g_4W2n1s54" // encontrada em Project Settings > API
+    SUPABASE_URL: "COLE_AQUI_A_URL_DO_SEU_PROJETO_SUPABASE",
+    SUPABASE_ANON_KEY: "COLE_AQUI_A_CHAVE_ANON_PUBLIC_DO_SUPABASE"
   };
 </script>
 <!-- ===================================================================== -->
@@ -111,8 +112,8 @@
     <div class="wordmark">
       <div class="seal">WL</div>
       <div>
-        <h1 class="brand">Banco WL</h1>
-        <small>Consulta do aluno</small>
+        <h1 class="brand">WL Bank</h1>
+        <small>🐷 Minha conta · Consulta do aluno</small>
       </div>
     </div>
   </header>
@@ -120,8 +121,13 @@
   <div id="tela-login">
     <div class="login-card">
       <div class="seal">WL</div>
-      <h1 class="brand">Minha conta</h1>
+      <h1 class="brand">Minha conta 💰</h1>
       <p class="sub">Digite seu RA e sua senha para consultar seu extrato.</p>
+      <div style="background:rgba(45,212,191,0.1); border:1px solid rgba(45,212,191,0.3); border-radius:10px; padding:12px 14px; margin-bottom:20px; font-size:12.5px; line-height:1.5;">
+        🎓 O WL Bank é uma moeda simbólica da sua escola — um jeito divertido
+        de aprender a cuidar do dinheiro, ganhar juros e evoluir. Continue
+        assim!
+      </div>
       <form id="form-login">
         <div class="field">
           <label>RA</label>
@@ -156,7 +162,7 @@
     </div>
 
     <div class="cartao">
-      <h3>Pacotes de juros ativos</h3>
+      <h3>🏅 Planos de juros pedagógicos ativos</h3>
       <div id="lista-pacotes">—</div>
     </div>
 
@@ -172,14 +178,16 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 const $ = (id) => document.getElementById(id);
-const fmt = (n) => Number(n).toLocaleString('pt-BR', { style:'currency', currency:'BRL' });
+const fmt = (n) => 'WL ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const rotulosTipo = {
   deposito:'Depósito', saque:'Saque',
-  transferencia_enviada:'Transferência enviada', transferencia_recebida:'Transferência recebida',
-  rendimento_automatico:'Rendimento automático', rendimento_manual:'Rendimento manual'
+  transferencia_enviada:'PIX enviado', transferencia_recebida:'PIX recebido',
+  rendimento_automatico:'Juros pedagógico automático', rendimento_manual:'Juros pedagógico manual',
+  taxa_debito:'Taxa aplicada', taxa_bonus:'Bônus aplicado',
+  estorno_credito:'Estorno (crédito)', estorno_debito:'Estorno (débito)'
 };
-const negativos = ['saque','transferencia_enviada'];
+const negativos = ['saque','transferencia_enviada','taxa_debito','estorno_debito'];
 
 $('form-login').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -211,7 +219,7 @@ function renderDados(data){
 
   $('info-aluno').textContent = `${data.aluno.nome} · ${data.turma}${data.aluno.numero ? ' · Nº ' + data.aluno.numero : ''}`;
   $('valor-saldo').textContent = fmt(data.saldo);
-  $('valor-taxa').textContent = `Rendimento atual: ${Number(data.taxa_diaria_total).toFixed(2)}%/dia`;
+  $('valor-taxa').textContent = `📈 Juros pedagógico atual: ${Number(data.taxa_diaria_total).toFixed(2)}%/dia`;
 
   const pacotesEl = $('lista-pacotes');
   pacotesEl.innerHTML = data.pacotes_ativos.length
@@ -224,10 +232,21 @@ function renderDados(data){
         const sinal = negativos.includes(t.tipo) ? '-' : '+';
         const classe = negativos.includes(t.tipo) ? 'valor-neg' : 'valor-pos';
         const quando = new Date(t.criado_em).toLocaleString('pt-BR');
+
+        let extra = `${quando}${t.descricao ? ' · ' + t.descricao : ''}`;
+        if (t.contra_aluno_nome) {
+          const rotuloContra = t.tipo === 'transferencia_enviada' ? 'Para' : 'De';
+          extra += ` · ${rotuloContra}: ${t.contra_aluno_nome}${t.contra_turma_nome ? ' · ' + t.contra_turma_nome : ''}`;
+        }
+
+        const infoIcone = t.pacote_nome
+          ? ` <span class="mono" title="${(t.pacote_descricao||'').replace(/"/g,'&quot;')}" style="cursor:help; color:var(--sun-2);">ℹ️</span>`
+          : '';
+
         return `<div class="recibo-linha">
           <div>
-            <div>${rotulosTipo[t.tipo] || t.tipo}</div>
-            <div class="quando">${quando}${t.descricao ? ' · ' + t.descricao : ''}</div>
+            <div>${rotulosTipo[t.tipo] || t.tipo}${infoIcone}</div>
+            <div class="quando">${extra}</div>
           </div>
           <div class="mono ${classe}">${sinal} ${fmt(t.valor)}</div>
         </div>`;

@@ -3,48 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Banco WL — Painel do Professor</title>
+<title>WL Bank — Painel do Professor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   /* =====================================================================
-     BANCO WL — token de design
-     Paleta: azul-marinho "livro-caixa" + selo dourado
-     Tipografia: Fraunces (marca/títulos), Inter (interface), IBM Plex Mono (valores)
+     WL BANK — token de design
+     Projeto pedagógico: paleta jovem e colorida, ícones amigáveis.
+     Tipografia: Baloo 2 (marca/títulos), Nunito (interface), IBM Plex Mono (valores)
      ===================================================================== */
   :root{
-    --navy-950:#0b1526;
-    --navy-900:#101f36;
-    --navy-800:#16294a;
-    --navy-700:#1e3559;
-    --paper:#f6f3ea;
-    --paper-dim:#e9e4d6;
-    --gold:#c9a227;
-    --gold-soft:#e4cd7a;
-    --gold-2:#dbb84a;
-    --ink:#101f36;
-    --ink-soft:#5a6472;
-    --green:#3f7d5c;
-    --red:#b0453b;
-    --radius:10px;
-    --shadow: 0 8px 30px rgba(11,21,38,0.25);
+    --bg-950:#181233;
+    --bg-900:#211a49;
+    --bg-800:#2b2260;
+    --bg-700:#372c78;
+    --paper:#faf7ff;
+    --paper-dim:#e8e2fb;
+    --sun:#ffc94d;
+    --sun-soft:#ffe08a;
+    --sun-2:#ffd873;
+    --coral:#ff7a59;
+    --coral-2:#ff9478;
+    --mint:#2dd4bf;
+    --ink:#211a49;
+    --ink-soft:#a79fd1;
+    --green:#34d399;
+    --red:#fb7185;
+    --radius:14px;
+    --shadow: 0 8px 30px rgba(24,18,51,0.35);
   }
   *{box-sizing:border-box;}
   body{margin:0;}
   html,body{
-    background: var(--navy-950);
+    background: var(--bg-950);
     color: var(--paper);
-    font-family:'Inter',sans-serif;
+    font-family:'Nunito',sans-serif;
     min-height:100vh;
   }
-  ::selection{ background: var(--gold); color: var(--navy-950); }
+  ::selection{ background: var(--sun); color: var(--bg-950); }
   .mono{ font-family:'IBM Plex Mono',monospace; }
   .brand{
-    font-family:'Fraunces',serif;
+    font-family:'Baloo 2',sans-serif;
     font-weight:700;
     letter-spacing:0.01em;
   }
-  a{ color: var(--gold-2); }
+  a{ color: var(--sun-2); }
 
   /* ---------- layout shells ---------- */
   #app{ min-height:100vh; display:flex; flex-direction:column; }
@@ -53,45 +56,45 @@
   header.topbar{
     display:flex; align-items:center; justify-content:space-between;
     padding:18px 28px;
-    background: linear-gradient(180deg, var(--navy-900), var(--navy-950));
-    border-bottom: 1px solid rgba(201,162,39,0.25);
+    background: linear-gradient(180deg, var(--bg-900), var(--bg-950));
+    border-bottom: 1px solid rgba(255,201,77,0.25);
   }
   .wordmark{ display:flex; align-items:center; gap:12px; }
   .seal{
     width:38px; height:38px; border-radius:50%;
-    border:2px solid var(--gold);
+    border:2px solid var(--sun);
     display:flex; align-items:center; justify-content:center;
-    font-family:'Fraunces',serif; font-weight:700; color:var(--gold);
+    font-family:'Baloo 2',sans-serif; font-weight:700; color:var(--sun);
     font-size:15px;
-    box-shadow: inset 0 0 0 3px rgba(201,162,39,0.12);
+    box-shadow: inset 0 0 0 3px rgba(255,201,77,0.12);
   }
   .wordmark h1{ font-size:20px; margin:0; color:var(--paper); }
   .wordmark small{ display:block; color:var(--ink-soft); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; }
   .topbar-right{ display:flex; align-items:center; gap:14px; font-size:13px; color:var(--ink-soft); }
 
   button, .btn{
-    font-family:'Inter',sans-serif; font-size:14px; font-weight:600;
+    font-family:'Nunito',sans-serif; font-size:14px; font-weight:600;
     border:none; border-radius:7px; padding:9px 16px; cursor:pointer;
     transition: transform .08s ease, background .15s ease;
   }
   button:active{ transform: scale(0.98); }
-  .btn-gold{ background: var(--gold); color: var(--navy-950); }
-  .btn-gold:hover{ background: var(--gold-2); }
-  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(246,243,234,0.25); }
-  .btn-ghost:hover{ border-color: var(--gold); color: var(--gold-2); }
-  .btn-danger{ background: transparent; color: var(--red); border:1px solid rgba(176,69,59,0.5); }
-  .btn-danger:hover{ background: rgba(176,69,59,0.12); }
+  .btn-gold{ background: var(--sun); color: var(--bg-950); }
+  .btn-gold:hover{ background: var(--sun-2); }
+  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(250,247,255,0.25); }
+  .btn-ghost:hover{ border-color: var(--sun); color: var(--sun-2); }
+  .btn-danger{ background: transparent; color: var(--red); border:1px solid rgba(251,113,133,0.5); }
+  .btn-danger:hover{ background: rgba(251,113,133,0.12); }
   .btn-small{ padding:6px 11px; font-size:12.5px; border-radius:6px; }
   button:disabled{ opacity:0.45; cursor:not-allowed; }
 
   input, select, textarea{
-    font-family:'Inter',sans-serif; font-size:14px;
-    background: var(--navy-800); color: var(--paper);
-    border:1px solid rgba(246,243,234,0.18); border-radius:7px;
+    font-family:'Nunito',sans-serif; font-size:14px;
+    background: var(--bg-800); color: var(--paper);
+    border:1px solid rgba(250,247,255,0.18); border-radius:7px;
     padding:9px 11px; width:100%;
   }
   input:focus, select:focus, textarea:focus{
-    outline: 2px solid var(--gold); outline-offset:1px; border-color: var(--gold);
+    outline: 2px solid var(--sun); outline-offset:1px; border-color: var(--sun);
   }
   label{ font-size:12px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:5px; }
   .field{ margin-bottom:14px; }
@@ -101,8 +104,8 @@
     flex:1; display:flex; align-items:center; justify-content:center; padding:20px;
   }
   .login-card{
-    background: var(--navy-900);
-    border:1px solid rgba(201,162,39,0.3);
+    background: var(--bg-900);
+    border:1px solid rgba(255,201,77,0.3);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     padding:38px 34px;
@@ -117,8 +120,8 @@
   #tela-app{ flex:1; display:flex; }
   aside.rail{
     width:230px; flex-shrink:0;
-    background: var(--navy-900);
-    border-right:1px solid rgba(201,162,39,0.18);
+    background: var(--bg-900);
+    border-right:1px solid rgba(255,201,77,0.18);
     padding:20px 14px; overflow-y:auto;
   }
   aside.rail h2{ font-size:11px; text-transform:uppercase; letter-spacing:0.09em; color:var(--ink-soft); margin:4px 8px 10px; }
@@ -127,49 +130,49 @@
     padding:10px 12px; border-radius:7px; cursor:pointer; margin-bottom:3px;
     font-size:14px; color:var(--paper);
   }
-  .turma-item:hover{ background: rgba(201,162,39,0.08); }
-  .turma-item.ativa{ background: rgba(201,162,39,0.16); color: var(--gold-2); font-weight:600; }
+  .turma-item:hover{ background: rgba(255,201,77,0.08); }
+  .turma-item.ativa{ background: rgba(255,201,77,0.16); color: var(--sun-2); font-weight:600; }
   .turma-item .n{ font-size:11px; color:var(--ink-soft); }
 
   main.conteudo{ flex:1; padding:26px 32px; overflow-y:auto; }
 
   .barra-titulo{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px; }
-  .barra-titulo h2{ font-family:'Fraunces',serif; font-size:22px; margin:0; }
+  .barra-titulo h2{ font-family:'Baloo 2',sans-serif; font-size:22px; margin:0; }
   .barra-titulo .resumo{ color: var(--ink-soft); font-size:13px; }
-  .barra-titulo .resumo .mono{ color: var(--gold-2); }
+  .barra-titulo .resumo .mono{ color: var(--sun-2); }
 
-  table.ledger{ width:100%; border-collapse:collapse; background: var(--navy-900); border-radius: var(--radius); overflow:hidden; }
+  table.ledger{ width:100%; border-collapse:collapse; background: var(--bg-900); border-radius: var(--radius); overflow:hidden; }
   table.ledger th{
     text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
-    color:var(--ink-soft); padding:12px 14px; border-bottom:1px solid rgba(201,162,39,0.2);
+    color:var(--ink-soft); padding:12px 14px; border-bottom:1px solid rgba(255,201,77,0.2);
   }
   table.ledger td{ padding:12px 14px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:14px; vertical-align:middle; }
   table.ledger tr:last-child td{ border-bottom:none; }
-  table.ledger tr:hover td{ background: rgba(201,162,39,0.04); }
+  table.ledger tr:hover td{ background: rgba(255,201,77,0.04); }
   .saldo{ font-weight:600; }
   .acoes-linha{ display:flex; gap:6px; flex-wrap:wrap; }
 
   .cartao{
-    background: var(--navy-900); border:1px solid rgba(201,162,39,0.18);
+    background: var(--bg-900); border:1px solid rgba(255,201,77,0.18);
     border-radius: var(--radius); padding:20px; margin-bottom:20px;
   }
-  .cartao h3{ font-family:'Fraunces',serif; font-size:16px; margin:0 0 14px; color: var(--gold-2); }
+  .cartao h3{ font-family:'Baloo 2',sans-serif; font-size:16px; margin:0 0 14px; color: var(--sun-2); }
   .grid-2{ display:grid; grid-template-columns:1fr 1fr; gap:14px; }
   .linha-form{ display:flex; gap:10px; align-items:flex-end; flex-wrap:wrap; }
   .linha-form .field{ flex:1; min-width:160px; margin-bottom:0; }
 
   /* ---------- modal ---------- */
   .overlay{
-    position:fixed; inset:0; background: rgba(11,21,38,0.72);
+    position:fixed; inset:0; background: rgba(24,18,51,0.72);
     display:flex; align-items:center; justify-content:center; padding:20px; z-index:50;
   }
   .modal{
-    background: var(--navy-900); border:1px solid rgba(201,162,39,0.3);
+    background: var(--bg-900); border:1px solid rgba(255,201,77,0.3);
     border-radius: var(--radius); box-shadow: var(--shadow);
     width:100%; max-width:440px; padding:26px;
   }
   .modal header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
-  .modal header h3{ font-family:'Fraunces',serif; margin:0; font-size:18px; }
+  .modal header h3{ font-family:'Baloo 2',sans-serif; margin:0; font-size:18px; }
   .fechar-x{ background:none; border:none; color:var(--ink-soft); font-size:20px; cursor:pointer; padding:0 4px; }
   .erro-modal{ color: var(--red); font-size:13px; margin-top:8px; min-height:16px; }
 
@@ -188,15 +191,15 @@
   .valor-neg{ color: var(--red); }
 
   .toast{
-    position:fixed; bottom:24px; right:24px; background: var(--navy-800);
-    border:1px solid var(--gold); color: var(--paper); padding:12px 18px;
+    position:fixed; bottom:24px; right:24px; background: var(--bg-800);
+    border:1px solid var(--sun); color: var(--paper); padding:12px 18px;
     border-radius:8px; font-size:13.5px; box-shadow: var(--shadow); z-index:100;
   }
   .toast.erro{ border-color: var(--red); }
 
   @media (max-width: 720px){
     #tela-app{ flex-direction:column; }
-    aside.rail{ width:100%; border-right:none; border-bottom:1px solid rgba(201,162,39,0.18); }
+    aside.rail{ width:100%; border-right:none; border-bottom:1px solid rgba(255,201,77,0.18); }
     .grid-2{ grid-template-columns:1fr; }
   }
 </style>
@@ -209,8 +212,8 @@
      ===================================================================== -->
 <script>
   const CONFIG = {
-    SUPABASE_URL: "https://qdleehomiwzyeinegoge.supabase.co",       // ex: https://xxxxx.supabase.co
-    SUPABASE_ANON_KEY: "sb_publishable_wHsFgwOuu5f9Oo7-oe805g_4W2n1s54" // encontrada em Project Settings > API
+    SUPABASE_URL: "COLE_AQUI_A_URL_DO_SEU_PROJETO_SUPABASE",       // ex: https://xxxxx.supabase.co
+    SUPABASE_ANON_KEY: "COLE_AQUI_A_CHAVE_ANON_PUBLIC_DO_SUPABASE" // encontrada em Project Settings > API
   };
 </script>
 <!-- ===================================================================== -->
@@ -221,13 +224,15 @@
     <div class="wordmark">
       <div class="seal">WL</div>
       <div>
-        <h1 class="brand">Banco WL</h1>
-        <small>Painel do professor</small>
+        <h1 class="brand">WL Bank</h1>
+        <small>🎓 Painel do professor · Projeto pedagógico</small>
       </div>
     </div>
     <div class="topbar-right hidden" id="info-usuario">
+      <span id="badge-cargo" class="mono" style="background:rgba(255,201,77,0.15); color:var(--sun-2); border-radius:6px; padding:3px 9px; font-size:11px;"></span>
       <span id="email-usuario"></span>
-      <button class="btn-ghost btn-small" id="btn-config">Configurações</button>
+      <button class="btn-ghost btn-small" id="btn-config">⚙️ Configurações</button>
+      <button class="btn-ghost btn-small" id="btn-relatorios">📊 Relatórios</button>
       <button class="btn-ghost btn-small" id="btn-sair">Sair</button>
     </div>
   </header>
@@ -237,7 +242,12 @@
     <div class="login-card">
       <div class="seal">WL</div>
       <h1 class="brand">Acesso restrito</h1>
-      <p class="sub">Somente professores cadastrados podem entrar.</p>
+      <p class="sub">Somente professores e direção cadastrados podem entrar.</p>
+      <div style="background:rgba(45,212,191,0.1); border:1px solid rgba(45,212,191,0.3); border-radius:10px; padding:12px 14px; margin-bottom:20px; font-size:12.5px; color:var(--paper); line-height:1.5;">
+        🎓 <strong>WL Bank</strong> é um projeto pedagógico de educação financeira —
+        uma moeda simbólica para incentivar e motivar a turma. Nada aqui envolve
+        dinheiro real.
+      </div>
       <form id="form-login">
         <div class="field">
           <label>E-mail</label>
@@ -268,12 +278,12 @@
         <button type="submit" class="btn-ghost btn-small" style="width:100%;">+ Adicionar turma</button>
       </form>
 
-      <h2 style="margin-top:26px;">Rendimento</h2>
+      <h2 style="margin-top:26px;">📈 Juros Pedagógicos</h2>
       <div class="cartao" style="padding:14px;">
         <p style="font-size:12.5px; color:var(--ink-soft); margin:0 0 12px;">
           A taxa de cada aluno vem dos pacotes de juros (veja Configurações).
         </p>
-        <button id="btn-render-manual" class="btn-gold btn-small" style="width:100%;">Aplicar rendimento manual</button>
+        <button id="btn-render-manual" class="btn-gold btn-small" style="width:100%;">Aplicar juros pedagógico</button>
       </div>
     </aside>
 
@@ -303,7 +313,7 @@
 
       <table class="ledger" id="tabela-alunos">
         <thead>
-          <tr><th>Nº</th><th>Aluno</th><th>RA</th><th>Saldo</th><th>Rendimento</th><th style="text-align:right;">Ações</th></tr>
+          <tr><th>Nº</th><th>Aluno</th><th>RA</th><th>Saldo</th><th>Juros</th><th style="text-align:right;">Ações</th></tr>
         </thead>
         <tbody id="corpo-alunos"></tbody>
       </table>
@@ -318,16 +328,16 @@
     </div>
 
     <div class="cartao">
-      <h3>Rendimento automático</h3>
+      <h3>📈 Juros Pedagógicos Automáticos</h3>
       <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:14px; color:var(--paper); margin-bottom:14px;">
         <input type="checkbox" id="cfg-ativo-geral" style="width:auto;">
-        Aplicar rendimento automático todos os dias, com base nos pacotes de cada conta
+        Aplicar juros pedagógicos automaticamente todos os dias, com base nos pacotes de cada conta
       </label>
       <button id="btn-salvar-cfg-geral" class="btn-gold btn-small">Salvar</button>
     </div>
 
     <div class="cartao">
-      <h3>Pacotes de juros</h3>
+      <h3>🏅 Planos de Juros Pedagógicos</h3>
       <table class="ledger" style="margin-bottom:22px;">
         <thead>
           <tr><th>Nome</th><th>Tipo</th><th>Taxa diária</th><th>Duração</th><th style="text-align:right;">Ações</th></tr>
@@ -335,7 +345,7 @@
         <tbody id="corpo-pacotes"></tbody>
       </table>
 
-      <h3 style="font-size:14px;">Novo pacote personalizado</h3>
+      <h3 style="font-size:14px;">✨ Novo plano personalizado</h3>
       <div class="grid-2">
         <div class="field"><label>Nome do pacote</label><input type="text" id="novo-pacote-nome" placeholder="Ex: Bônus Feira de Ciências"></div>
         <div class="field"><label>Taxa diária (%)</label><input type="number" step="0.01" id="novo-pacote-taxa" class="mono" placeholder="Ex: 0.20"></div>
@@ -358,7 +368,7 @@
     </div>
 
     <div class="cartao">
-      <h3>Atribuir pacote a alunos</h3>
+      <h3>🎯 Atribuir plano a alunos</h3>
       <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
         Funciona para qualquer pacote, incluindo o Básico. Escolha a turma para atribuir a um aluno
         específico ou à turma inteira, ou "Escola toda" para aplicar de uma vez a todos os alunos cadastrados.
@@ -381,9 +391,135 @@
       <button id="btn-atribuir-pacote" class="btn-gold btn-small">Atribuir aos selecionados</button>
       <div class="erro-modal" id="atribuir-erro"></div>
     </div>
+
+    <div class="cartao">
+      <h3>💰 Depósito em lote</h3>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+        Deposite o mesmo valor para vários alunos de uma vez — uma turma inteira ou a escola toda.
+        Você escolhe exatamente quem recebe na lista abaixo.
+      </p>
+      <div class="grid-2">
+        <div class="field">
+          <label>Escopo</label>
+          <select id="lote-turma-select"></select>
+        </div>
+        <div class="field">
+          <label>Valor (WL) para cada aluno selecionado</label>
+          <input type="number" step="0.01" min="0.01" id="lote-valor" class="mono">
+        </div>
+      </div>
+      <div class="field"><label>Descrição (opcional)</label><input type="text" id="lote-descricao" placeholder="Ex: Prêmio pela gincana"></div>
+      <div id="lote-lista-alunos" style="margin-bottom:14px; max-height:220px; overflow-y:auto; display:grid; gap:6px;"></div>
+      <button id="btn-lote-depositar" class="btn-gold btn-small">💰 Depositar para selecionados</button>
+      <div class="erro-modal" id="lote-erro"></div>
+    </div>
+
+    <div class="cartao">
+      <h3>⚠️ Taxas e Consequências</h3>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+        Crie motivos para debitar (indisciplina, baixa frequência, etc.) ou bonificar (participação,
+        boas atitudes) e aplique a um aluno, turma ou à escola toda. É um recurso pedagógico — não
+        envolve dinheiro real.
+      </p>
+      <table class="ledger" style="margin-bottom:20px;">
+        <thead><tr><th>Motivo</th><th>Tipo</th><th>Valor</th><th style="text-align:right;">Ações</th></tr></thead>
+        <tbody id="corpo-motivos"></tbody>
+      </table>
+
+      <h3 style="font-size:14px;">✨ Novo motivo</h3>
+      <div class="grid-2">
+        <div class="field"><label>Nome do motivo</label><input type="text" id="novo-motivo-nome" placeholder="Ex: Indisciplina em sala"></div>
+        <div class="field"><label>Valor (WL)</label><input type="number" step="0.01" min="0.01" id="novo-motivo-valor" class="mono"></div>
+      </div>
+      <div class="field">
+        <label>Tipo</label>
+        <select id="novo-motivo-tipo">
+          <option value="debito">Débito (penalidade)</option>
+          <option value="bonus">Bônus (reconhecimento)</option>
+        </select>
+      </div>
+      <button id="btn-criar-motivo" class="btn-ghost btn-small" style="margin-bottom:24px;">+ Criar motivo</button>
+
+      <h3 style="font-size:14px;">🎯 Aplicar taxa/bônus</h3>
+      <div class="grid-2">
+        <div class="field">
+          <label>Motivo</label>
+          <select id="taxa-motivo-select"></select>
+        </div>
+        <div class="field">
+          <label>Escopo</label>
+          <select id="taxa-turma-select"></select>
+        </div>
+      </div>
+      <div class="field"><label>Descrição (opcional, substitui o nome do motivo no extrato)</label><input type="text" id="taxa-descricao"></div>
+      <div id="taxa-lista-alunos" style="margin-bottom:14px; max-height:220px; overflow-y:auto; display:grid; gap:6px;"></div>
+      <button id="btn-aplicar-taxa" class="btn-gold btn-small">Aplicar aos selecionados</button>
+      <div class="erro-modal" id="taxa-erro"></div>
+    </div>
+
+    <div class="cartao">
+      <h3>📥 Importar turma por planilha</h3>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+        Cadastre vários alunos de uma vez a partir de uma planilha Excel com as colunas
+        <strong>Turma, Número, RA, Nome</strong>. Turmas que ainda não existem são criadas automaticamente.
+      </p>
+      <button id="btn-baixar-modelo" class="btn-ghost btn-small" style="margin-bottom:14px;">⬇️ Baixar planilha modelo</button>
+      <div class="field"><label>Arquivo (.xlsx)</label><input type="file" id="importar-arquivo" accept=".xlsx,.xls"></div>
+      <div id="importar-preview" style="margin:12px 0; font-size:13px;"></div>
+      <button id="btn-confirmar-importacao" class="btn-gold btn-small hidden">✅ Confirmar importação</button>
+      <div class="erro-modal" id="importar-erro"></div>
+    </div>
+  </div>
+
+  <!-- TELA DE RELATÓRIOS -->
+  <div id="tela-relatorios" class="hidden" style="flex:1; padding:26px 32px; overflow-y:auto;">
+    <div class="barra-titulo">
+      <h2 class="brand">📊 Relatórios</h2>
+      <button class="btn-ghost btn-small" id="btn-voltar-relatorios">← Voltar ao painel</button>
+    </div>
+
+    <div class="cartao">
+      <h3>Filtros</h3>
+      <div class="grid-2">
+        <div class="field">
+          <label>Escopo</label>
+          <select id="rel-escopo-select"></select>
+        </div>
+        <div class="field">
+          <label>Tipo de movimentação</label>
+          <select id="rel-tipo-select">
+            <option value="todos">Todos</option>
+            <option value="creditos">Só créditos (depósitos, PIX recebido, juros, bônus)</option>
+            <option value="debitos">Só débitos (saques, PIX enviado, taxas)</option>
+            <option value="rendimentos">Só juros pedagógicos</option>
+            <option value="taxas">Só taxas e bônus comportamentais</option>
+            <option value="pix">Só PIX</option>
+          </select>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>De</label><input type="date" id="rel-data-inicio"></div>
+        <div class="field"><label>Até</label><input type="date" id="rel-data-fim"></div>
+      </div>
+      <button id="btn-gerar-relatorio" class="btn-gold btn-small">Gerar relatório</button>
+      <button id="btn-exportar-csv" class="btn-ghost btn-small hidden" style="margin-left:8px;">⬇️ Exportar CSV</button>
+    </div>
+
+    <div id="rel-resumo" class="grid-2" style="margin-bottom:20px;"></div>
+
+    <div class="cartao">
+      <h3>Movimentações</h3>
+      <div style="max-height:420px; overflow-y:auto;">
+        <table class="ledger">
+          <thead><tr><th>Data</th><th>Aluno</th><th>Turma</th><th>Tipo</th><th>Descrição</th><th style="text-align:right;">Valor</th></tr></thead>
+          <tbody id="corpo-relatorio"></tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
@@ -396,6 +532,8 @@ let turmaAtualId = null;
 let alunosCache = [];
 let pacotesCache = [];
 let turmasCache = [];
+let motivosCache = [];
+let ultimoRelatorio = [];
 
 function toast(msg, erro=false){
   const el = document.createElement('div');
@@ -428,6 +566,8 @@ async function entrarNoApp(){
   $('tela-app').classList.remove('hidden');
   $('info-usuario').classList.remove('hidden');
   $('email-usuario').textContent = session.user.email;
+  const cargo = session.user.user_metadata?.cargo || 'Professor(a)';
+  $('badge-cargo').textContent = cargo;
   await carregarPacotesCache();
   await carregarTurmas();
 }
@@ -452,6 +592,17 @@ $('btn-config').addEventListener('click', async () => {
 
 $('btn-voltar-app').addEventListener('click', () => {
   $('tela-config').classList.add('hidden');
+  $('tela-app').classList.remove('hidden');
+});
+
+$('btn-relatorios').addEventListener('click', async () => {
+  $('tela-app').classList.add('hidden');
+  $('tela-relatorios').classList.remove('hidden');
+  await abrirTelaRelatorios();
+});
+
+$('btn-voltar-relatorios').addEventListener('click', () => {
+  $('tela-relatorios').classList.add('hidden');
   $('tela-app').classList.remove('hidden');
 });
 
@@ -541,9 +692,9 @@ function renderAlunos(){
     const taxaTotal = Number(aluno._taxa?.taxa_total ?? 0);
 
     const tagsPacotes = (aluno._pacotes || []).map(p => `
-      <span class="mono" style="display:inline-flex; align-items:center; gap:4px; background:rgba(201,162,39,0.14); color:var(--gold-2); border-radius:5px; padding:2px 7px; font-size:11px; margin:2px 4px 0 0;">
+      <span class="mono" style="display:inline-flex; align-items:center; gap:4px; background:rgba(255,201,77,0.14); color:var(--sun-2); border-radius:5px; padding:2px 7px; font-size:11px; margin:2px 4px 0 0;">
         ${p.nome} (+${Number(p.taxa_diaria)}%)
-        <button data-remover-pacote="${p.conta_pacote_id}" title="Remover" style="background:none; border:none; color:var(--gold-2); cursor:pointer; padding:0; font-size:12px;">✕</button>
+        <button data-remover-pacote="${p.conta_pacote_id}" title="Remover" style="background:none; border:none; color:var(--sun-2); cursor:pointer; padding:0; font-size:12px;">✕</button>
       </span>`).join('');
 
     const tr = document.createElement('tr');
@@ -558,13 +709,13 @@ function renderAlunos(){
       </td>
       <td>
         <div class="acoes-linha">
-          <button class="btn-ghost btn-small" data-acao="depositar">Depositar</button>
-          <button class="btn-ghost btn-small" data-acao="sacar">Sacar</button>
-          <button class="btn-ghost btn-small" data-acao="transferir">Transferir</button>
-          <button class="btn-ghost btn-small" data-acao="pacote">+ Pacote</button>
-          <button class="btn-ghost btn-small" data-acao="senha">Senha</button>
-          <button class="btn-ghost btn-small" data-acao="editar">Editar</button>
-          <button class="btn-ghost btn-small" data-acao="extrato">Extrato</button>
+          <button class="btn-ghost btn-small" data-acao="depositar">💰 Depositar</button>
+          <button class="btn-ghost btn-small" data-acao="sacar">🏧 Sacar</button>
+          <button class="btn-ghost btn-small" data-acao="pix">💸 PIX</button>
+          <button class="btn-ghost btn-small" data-acao="pacote">🏅 + Plano</button>
+          <button class="btn-ghost btn-small" data-acao="senha">🔑 Senha</button>
+          <button class="btn-ghost btn-small" data-acao="editar">✏️ Editar</button>
+          <button class="btn-ghost btn-small" data-acao="extrato">📄 Extrato</button>
         </div>
       </td>`;
     tr.querySelectorAll('button[data-acao]').forEach(btn => {
@@ -630,13 +781,18 @@ async function editarAluno(aluno){
 }
 
 // ---------------------------------------------------------------- MODAIS
-function abrirModal(tipo, aluno){
+async function abrirModal(tipo, aluno){
   const overlay = document.createElement('div');
   overlay.className = 'overlay';
 
-  const titulos = { depositar:'Depositar', sacar:'Sacar', transferir:'Transferir', extrato:'Extrato', pacote:'Atribuir pacote', senha:'Definir senha do aluno' };
+  const titulos = { depositar:'Depositar', sacar:'Sacar', pix:'PIX', extrato:'Extrato', pacote:'Atribuir plano', senha:'Definir senha do aluno' };
 
   let corpo = '';
+  let todosAlunosPix = [];
+  if (tipo === 'pix') {
+    const { data } = await supabase.from('alunos').select('id, nome, numero, turmas(nome)').neq('id', aluno.id).order('nome');
+    todosAlunosPix = data || [];
+  }
   if (tipo === 'senha') {
     corpo = `
       <p style="font-size:12.5px; color:var(--ink-soft); margin-top:0;">
@@ -667,16 +823,27 @@ function abrirModal(tipo, aluno){
       <div class="field"><label>Descrição (opcional)</label><input type="text" id="modal-descricao"></div>
       <button class="btn-gold" id="modal-confirmar" style="width:100%;">Confirmar ${titulos[tipo].toLowerCase()}</button>
       <div class="erro-modal" id="modal-erro"></div>`;
-  } else if (tipo === 'transferir') {
-    const outros = alunosCache.filter(a => a.id !== aluno.id);
+  } else if (tipo === 'pix') {
     corpo = `
       <div class="field">
-        <label>Transferir para</label>
-        <select id="modal-destino">${outros.map(a => `<option value="${a.id}">${a.numero ? a.numero + ' — ' : ''}${a.nome}</option>`).join('')}</select>
+        <label>Forma de envio</label>
+        <select id="pix-modo">
+          <option value="lista">Selecionar aluno (qualquer turma)</option>
+          <option value="chave">Usar chave PIX (RA do destinatário)</option>
+        </select>
+      </div>
+      <div class="field" id="pix-campo-lista">
+        <label>Destinatário</label>
+        <select id="modal-destino">${todosAlunosPix.map(a => `<option value="${a.id}">${a.numero ? a.numero + ' — ' : ''}${a.nome} · ${a.turmas?.nome ?? ''}</option>`).join('')}</select>
+      </div>
+      <div class="field hidden" id="pix-campo-chave">
+        <label>Chave PIX (RA)</label>
+        <input type="text" id="pix-chave-ra" placeholder="Digite o RA do destinatário">
+        <div id="pix-chave-resultado" style="font-size:12.5px; color:var(--ink-soft); margin-top:6px;"></div>
       </div>
       <div class="field"><label>Valor</label><input type="number" step="0.01" min="0.01" id="modal-valor" class="mono"></div>
       <div class="field"><label>Descrição (opcional)</label><input type="text" id="modal-descricao"></div>
-      <button class="btn-gold" id="modal-confirmar" style="width:100%;">Confirmar transferência</button>
+      <button class="btn-gold" id="modal-confirmar" style="width:100%;">💸 Confirmar PIX</button>
       <div class="erro-modal" id="modal-erro"></div>`;
   } else if (tipo === 'extrato') {
     corpo = `<div class="recibo" id="modal-extrato">Carregando...</div>`;
@@ -696,6 +863,22 @@ function abrirModal(tipo, aluno){
 
   if (tipo === 'extrato') { carregarExtrato(aluno.id); return; }
   if (!$('modal-confirmar')) return; // ex: nenhum pacote personalizado disponível
+
+  if (tipo === 'pix') {
+    $('pix-modo').addEventListener('change', (e) => {
+      $('pix-campo-lista').classList.toggle('hidden', e.target.value !== 'lista');
+      $('pix-campo-chave').classList.toggle('hidden', e.target.value !== 'chave');
+    });
+    $('pix-chave-ra').addEventListener('change', async () => {
+      const ra = $('pix-chave-ra').value.trim();
+      const resEl = $('pix-chave-resultado');
+      if (!ra) { resEl.textContent = ''; return; }
+      resEl.textContent = 'Buscando...';
+      const { data, error } = await supabase.rpc('fn_buscar_aluno_por_ra', { p_ra: ra });
+      if (error || !data || !data.length) { resEl.textContent = '⚠️ RA não encontrado.'; return; }
+      resEl.textContent = `✅ ${data[0].nome} · ${data[0].turma_nome}`;
+    });
+  }
 
   $('modal-confirmar').addEventListener('click', async () => {
     const erroEl = $('modal-erro');
@@ -735,8 +918,16 @@ function abrirModal(tipo, aluno){
       resp = await supabase.rpc('fn_depositar', { p_aluno_id: aluno.id, p_valor: valor, p_descricao: descricao });
     } else if (tipo === 'sacar') {
       resp = await supabase.rpc('fn_sacar', { p_aluno_id: aluno.id, p_valor: valor, p_descricao: descricao });
-    } else if (tipo === 'transferir') {
-      const destinoId = $('modal-destino').value;
+    } else if (tipo === 'pix') {
+      let destinoId;
+      if ($('pix-modo').value === 'chave') {
+        const ra = $('pix-chave-ra').value.trim();
+        const { data: busca, error: errBusca } = await supabase.rpc('fn_buscar_aluno_por_ra', { p_ra: ra });
+        if (errBusca || !busca || !busca.length) { erroEl.textContent = 'RA não encontrado.'; return; }
+        destinoId = busca[0].aluno_id;
+      } else {
+        destinoId = $('modal-destino').value;
+      }
       resp = await supabase.rpc('fn_transferir', { p_aluno_origem_id: aluno.id, p_aluno_destino_id: destinoId, p_valor: valor, p_descricao: descricao });
     }
 
@@ -761,23 +952,66 @@ async function carregarExtrato(alunoId){
 
   const rotulos = {
     deposito:'Depósito', saque:'Saque',
-    transferencia_enviada:'Transferência enviada', transferencia_recebida:'Transferência recebida',
-    rendimento_automatico:'Rendimento automático', rendimento_manual:'Rendimento manual'
+    transferencia_enviada:'PIX enviado', transferencia_recebida:'PIX recebido',
+    rendimento_automatico:'Juros pedagógico automático', rendimento_manual:'Juros pedagógico manual',
+    taxa_debito:'Taxa aplicada', taxa_bonus:'Bônus aplicado',
+    estorno_credito:'Estorno (crédito)', estorno_debito:'Estorno (débito)'
   };
-  const negativos = ['saque','transferencia_enviada'];
+  const negativos = ['saque','transferencia_enviada','taxa_debito','estorno_debito'];
+  const reversiveis = ['deposito','saque','transferencia_enviada','transferencia_recebida','rendimento_automatico','rendimento_manual','taxa_debito','taxa_bonus'];
 
   cont.innerHTML = data.map(t => {
     const sinal = negativos.includes(t.tipo) ? '-' : '+';
     const classe = negativos.includes(t.tipo) ? 'valor-neg' : 'valor-pos';
     const quando = new Date(t.criado_em).toLocaleString('pt-BR');
+
+    let linhasExtra = `${quando}${t.descricao ? ' · ' + t.descricao : ''}`;
+    if (t.professor_email && t.professor_email !== 'sistema') {
+      linhasExtra += ` · por ${t.professor_email}`;
+    }
+    if (t.contra_aluno_nome) {
+      const rotuloContra = t.tipo === 'transferencia_enviada' ? 'Para' : 'De';
+      linhasExtra += ` · ${rotuloContra}: ${t.contra_aluno_nome}${t.contra_aluno_numero ? ' (Nº ' + t.contra_aluno_numero + ')' : ''}${t.contra_turma_nome ? ' · ' + t.contra_turma_nome : ''}`;
+    }
+
+    const infoIcone = t.pacote_nome
+      ? `<button class="info-pacote" data-nome="${t.pacote_nome.replace(/"/g,'&quot;')}" data-desc="${(t.pacote_descricao||'Sem descrição.').replace(/"/g,'&quot;')}"
+           style="background:none; border:none; cursor:pointer; font-size:13px; padding:0 0 0 6px;" title="Ver detalhes do plano">ℹ️</button>`
+      : '';
+
+    const podeEstornar = !t.estornada && reversiveis.includes(t.tipo);
+    const tagEstorno = t.estornada
+      ? `<span style="font-size:10.5px; color:var(--ink-soft); margin-left:6px;">(estornada)</span>`
+      : podeEstornar
+        ? `<button class="btn-estornar-tx" data-id="${t.id}" style="background:none; border:none; color:var(--coral); cursor:pointer; font-size:11px; margin-left:8px; text-decoration:underline;">Estornar</button>`
+        : '';
+
     return `<div class="recibo-linha">
       <div>
-        <div class="tipo">${rotulos[t.tipo] || t.tipo}</div>
-        <div class="quando">${quando}${t.descricao ? ' · ' + t.descricao : ''}</div>
+        <div class="tipo">${rotulos[t.tipo] || t.tipo}${infoIcone}</div>
+        <div class="quando">${linhasExtra}</div>
       </div>
-      <div class="mono ${classe}">${sinal} ${fmt(t.valor)}</div>
+      <div class="mono ${classe}">${sinal} ${fmt(t.valor)}${tagEstorno}</div>
     </div>`;
   }).join('');
+
+  cont.querySelectorAll('.info-pacote').forEach(btn => {
+    btn.addEventListener('click', () => {
+      alert(`📈 ${btn.dataset.nome}\n\n${btn.dataset.desc}`);
+    });
+  });
+
+  cont.querySelectorAll('.btn-estornar-tx').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const motivo = prompt('Descreva o motivo do estorno:');
+      if (motivo === null || motivo.trim() === '') { if (motivo !== null) toast('Informe uma descrição para o estorno.', true); return; }
+      const { error } = await supabase.rpc('fn_estornar_transacao', { p_transacao_id: btn.dataset.id, p_descricao: motivo.trim() });
+      if (error) { toast('Erro: ' + error.message, true); return; }
+      await carregarExtrato(alunoId);
+      await carregarAlunos();
+      toast('Transação estornada.');
+    });
+  });
 }
 
 // ---------------------------------------------------------------- TELA DE CONFIGURAÇÕES
@@ -787,6 +1021,15 @@ async function abrirTelaConfig(){
   renderTabelaPacotes();
   popularSelectPacotes();
   popularSelectTurmasAtribuir();
+  await carregarMotivosCache();
+  renderTabelaMotivos();
+  popularSelectMotivos();
+  popularSelectEscopo('lote-turma-select', async (escopo) => {
+    renderListaCheckbox('lote-lista-alunos', await carregarAlunosPorEscopo(escopo), escopo === 'todas');
+  });
+  popularSelectEscopo('taxa-turma-select', async (escopo) => {
+    renderListaCheckbox('taxa-lista-alunos', await carregarAlunosPorEscopo(escopo), escopo === 'todas');
+  });
 }
 
 async function carregarConfigGeral(){
@@ -957,7 +1200,7 @@ $('btn-atribuir-pacote').addEventListener('click', async () => {
 
 // ---------------------------------------------------------------- RENDIMENTO MANUAL
 $('btn-render-manual').addEventListener('click', async () => {
-  const taxaTexto = prompt('Taxa de rendimento manual (%) a aplicar para a turma atual:\n(ex: 1 para +1%, -0.5 para -0,5%)');
+  const taxaTexto = prompt('Taxa de juros pedagógico manual (%) a aplicar para a turma atual:\n(ex: 1 para +1%, -0.5 para -0,5%)');
   if (taxaTexto === null) return;
   const taxa = parseFloat(taxaTexto);
   if (!taxa) { toast('Taxa inválida.', true); return; }
@@ -965,11 +1208,357 @@ $('btn-render-manual').addEventListener('click', async () => {
   const { error } = await supabase.rpc('fn_aplicar_rendimento_manual', {
     p_taxa: taxa,
     p_turma_id: turmaAtualId,
-    p_descricao: 'Rendimento manual aplicado pelo professor'
+    p_descricao: 'Juros pedagógico manual aplicado pelo professor'
   });
   if (error) { toast('Erro: ' + error.message, true); return; }
   await carregarAlunos();
-  toast(`Rendimento de ${taxa}% aplicado à turma.`);
+  toast(`Juros pedagógico de ${taxa}% aplicado à turma.`);
+});
+
+// ---------------------------------------------------------------- HELPERS DE ESCOPO (reutilizados por lote/taxa)
+function popularSelectEscopo(selectId, onChange){
+  const sel = $(selectId);
+  sel.innerHTML = `<option value="todas">🏫 Escola toda (todas as turmas)</option>` +
+    turmasCache.map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+  sel.onchange = () => onChange(sel.value);
+  onChange('todas');
+}
+
+async function carregarAlunosPorEscopo(escopo){
+  let query = supabase.from('alunos').select('id, nome, numero, turmas(nome)')
+    .order('numero', { ascending: true, nullsFirst: false }).order('nome');
+  if (escopo !== 'todas') query = query.eq('turma_id', escopo);
+  const { data, error } = await query;
+  if (error) return [];
+  return data || [];
+}
+
+function renderListaCheckbox(containerId, alunos, mostrarTurma){
+  const cont = $(containerId);
+  const classeCheck = containerId + '-check';
+  const classeTodos = containerId + '-todos';
+  cont.innerHTML = `
+    <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:13px;">
+      <input type="checkbox" class="${classeTodos}" style="width:auto;"> Selecionar todos
+    </label>` +
+    alunos.map(a => `
+      <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:13px;">
+        <input type="checkbox" class="${classeCheck}" value="${a.id}" style="width:auto;">
+        ${a.numero ? `<span class="mono" style="color:var(--ink-soft);">${a.numero}</span>` : ''} ${a.nome}
+        ${mostrarTurma ? `<span style="color:var(--ink-soft); font-size:11px;">· ${a.turmas?.nome ?? ''}</span>` : ''}
+      </label>`).join('');
+  const chkTodos = cont.querySelector('.' + classeTodos);
+  if (chkTodos) {
+    chkTodos.addEventListener('change', (e) => {
+      cont.querySelectorAll('.' + classeCheck).forEach(cb => cb.checked = e.target.checked);
+    });
+  }
+}
+
+// ---------------------------------------------------------------- DEPÓSITO EM LOTE
+$('btn-lote-depositar').addEventListener('click', async () => {
+  const erroEl = $('lote-erro');
+  erroEl.textContent = '';
+  const valor = parseFloat($('lote-valor').value);
+  const descricao = $('lote-descricao').value.trim() || null;
+  const alunoIds = Array.from(document.querySelectorAll('.lote-lista-alunos-check:checked')).map(cb => cb.value);
+
+  if (!valor || valor <= 0) { erroEl.textContent = 'Informe um valor válido.'; return; }
+  if (!alunoIds.length) { erroEl.textContent = 'Selecione ao menos um aluno.'; return; }
+
+  const { error } = await supabase.rpc('fn_depositar_lote', { p_aluno_ids: alunoIds, p_valor: valor, p_descricao: descricao });
+  if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
+  toast(`💰 WL ${valor} depositado para ${alunoIds.length} aluno(s).`);
+  $('lote-valor').value = '';
+  $('lote-descricao').value = '';
+});
+
+// ---------------------------------------------------------------- TAXAS E CONSEQUÊNCIAS
+async function carregarMotivosCache(){
+  const { data, error } = await supabase.from('motivos_taxa').select('*').order('tipo').order('nome');
+  if (error) { toast('Erro ao carregar motivos: ' + error.message, true); return; }
+  motivosCache = data || [];
+}
+
+function renderTabelaMotivos(){
+  const corpo = $('corpo-motivos');
+  corpo.innerHTML = motivosCache.map(m => `
+    <tr>
+      <td>${m.nome}</td>
+      <td>${m.tipo === 'bonus' ? '✅ Bônus' : '⚠️ Débito'}</td>
+      <td class="mono">${Number(m.valor)}</td>
+      <td>
+        <div class="acoes-linha" style="justify-content:flex-end;">
+          <button class="btn-ghost btn-small" data-editar-motivo="${m.id}">Editar</button>
+          <button class="btn-danger btn-small" data-excluir-motivo="${m.id}">Excluir</button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  corpo.querySelectorAll('button[data-editar-motivo]').forEach(btn => {
+    btn.addEventListener('click', () => editarMotivo(btn.dataset.editarMotivo));
+  });
+  corpo.querySelectorAll('button[data-excluir-motivo]').forEach(btn => {
+    btn.addEventListener('click', () => excluirMotivo(btn.dataset.excluirMotivo));
+  });
+}
+
+async function editarMotivo(id){
+  const motivo = motivosCache.find(m => m.id === id);
+  if (!motivo) return;
+  const novoNome = prompt('Nome do motivo:', motivo.nome);
+  if (novoNome === null) return;
+  const novoValorTexto = prompt('Valor (WL):', motivo.valor);
+  if (novoValorTexto === null) return;
+  const novoValor = parseFloat(novoValorTexto);
+  if (isNaN(novoValor) || novoValor <= 0) { toast('Valor inválido.', true); return; }
+
+  const { error } = await supabase.from('motivos_taxa').update({ nome: novoNome.trim() || motivo.nome, valor: novoValor }).eq('id', id);
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  await carregarMotivosCache();
+  renderTabelaMotivos();
+  popularSelectMotivos();
+  toast('Motivo atualizado.');
+}
+
+async function excluirMotivo(id){
+  const motivo = motivosCache.find(m => m.id === id);
+  if (!confirm(`Excluir o motivo "${motivo?.nome}"? Taxas já aplicadas continuam no extrato.`)) return;
+  const { error } = await supabase.from('motivos_taxa').delete().eq('id', id);
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  await carregarMotivosCache();
+  renderTabelaMotivos();
+  popularSelectMotivos();
+  toast('Motivo excluído.');
+}
+
+$('btn-criar-motivo').addEventListener('click', async () => {
+  const nome = $('novo-motivo-nome').value.trim();
+  const valor = parseFloat($('novo-motivo-valor').value);
+  const tipo = $('novo-motivo-tipo').value;
+  if (!nome) { toast('Informe o nome do motivo.', true); return; }
+  if (!valor || valor <= 0) { toast('Informe um valor válido.', true); return; }
+
+  const { error } = await supabase.from('motivos_taxa').insert({ nome, valor, tipo });
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  $('novo-motivo-nome').value = '';
+  $('novo-motivo-valor').value = '';
+  await carregarMotivosCache();
+  renderTabelaMotivos();
+  popularSelectMotivos();
+  toast('Motivo criado.');
+});
+
+function popularSelectMotivos(){
+  const sel = $('taxa-motivo-select');
+  sel.innerHTML = motivosCache.length
+    ? motivosCache.map(m => `<option value="${m.id}">${m.tipo === 'bonus' ? '✅' : '⚠️'} ${m.nome} (${m.tipo === 'bonus' ? '+' : '-'}${m.valor} WL)</option>`).join('')
+    : `<option value="">Nenhum motivo criado</option>`;
+}
+
+$('btn-aplicar-taxa').addEventListener('click', async () => {
+  const erroEl = $('taxa-erro');
+  erroEl.textContent = '';
+  const motivoId = $('taxa-motivo-select').value;
+  const descricao = $('taxa-descricao').value.trim() || null;
+  const alunoIds = Array.from(document.querySelectorAll('.taxa-lista-alunos-check:checked')).map(cb => cb.value);
+
+  if (!motivoId) { erroEl.textContent = 'Crie um motivo primeiro.'; return; }
+  if (!alunoIds.length) { erroEl.textContent = 'Selecione ao menos um aluno.'; return; }
+
+  const { error } = await supabase.rpc('fn_aplicar_taxa', { p_motivo_id: motivoId, p_aluno_ids: alunoIds, p_descricao: descricao });
+  if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
+  toast(`Taxa aplicada a ${alunoIds.length} aluno(s).`);
+});
+
+// ---------------------------------------------------------------- IMPORTAR PLANILHA
+let linhasImportacao = [];
+
+$('btn-baixar-modelo').addEventListener('click', () => {
+  const ws = XLSX.utils.aoa_to_sheet([
+    ['Turma', 'Número', 'RA', 'Nome'],
+    ['6ºA', 1, '2026001', 'Exemplo de Aluno'],
+    ['6ºA', 2, '2026002', 'Outro Aluno Exemplo']
+  ]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Alunos');
+  XLSX.writeFile(wb, 'modelo_importacao_wl_bank.xlsx');
+});
+
+$('importar-arquivo').addEventListener('change', (e) => {
+  const arquivo = e.target.files[0];
+  const erroEl = $('importar-erro');
+  erroEl.textContent = '';
+  $('btn-confirmar-importacao').classList.add('hidden');
+  if (!arquivo) return;
+
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+      const primeiraAba = wb.Sheets[wb.SheetNames[0]];
+      const linhas = XLSX.utils.sheet_to_json(primeiraAba, { defval: '' });
+
+      linhasImportacao = linhas.map(l => ({
+        turma: String(l['Turma'] ?? '').trim(),
+        numero: l['Número'] !== '' && l['Número'] != null ? parseInt(l['Número'], 10) : null,
+        ra: String(l['RA'] ?? '').trim() || null,
+        nome: String(l['Nome'] ?? '').trim()
+      })).filter(l => l.turma && l.nome);
+
+      if (!linhasImportacao.length) {
+        erroEl.textContent = 'Nenhuma linha válida encontrada. Confira se as colunas são Turma, Número, RA, Nome.';
+        return;
+      }
+
+      const turmasUnicas = [...new Set(linhasImportacao.map(l => l.turma))];
+      $('importar-preview').innerHTML = `
+        <strong>${linhasImportacao.length}</strong> aluno(s) encontrado(s) em
+        <strong>${turmasUnicas.length}</strong> turma(s): ${turmasUnicas.join(', ')}.
+        <br>Confira uma amostra: ${linhasImportacao.slice(0, 3).map(l => `${l.nome} (${l.turma})`).join(' · ')}${linhasImportacao.length > 3 ? '...' : ''}`;
+      $('btn-confirmar-importacao').classList.remove('hidden');
+    } catch (err) {
+      erroEl.textContent = 'Não foi possível ler o arquivo. Confira se é um .xlsx válido.';
+    }
+  };
+  reader.readAsArrayBuffer(arquivo);
+});
+
+$('btn-confirmar-importacao').addEventListener('click', async () => {
+  const erroEl = $('importar-erro');
+  erroEl.textContent = '';
+  let criados = 0, comErro = 0;
+
+  const turmasUnicas = [...new Set(linhasImportacao.map(l => l.turma))];
+  const idsTurma = {};
+
+  for (const nomeTurma of turmasUnicas) {
+    let { data: existente } = await supabase.from('turmas').select('id').eq('nome', nomeTurma).maybeSingle();
+    if (!existente) {
+      const { data: nova, error: errTurma } = await supabase.from('turmas').insert({ nome: nomeTurma }).select('id').single();
+      if (errTurma) { comErro++; continue; }
+      existente = nova;
+    }
+    idsTurma[nomeTurma] = existente.id;
+  }
+
+  for (const linha of linhasImportacao) {
+    const turmaId = idsTurma[linha.turma];
+    if (!turmaId) { comErro++; continue; }
+    const { error } = await supabase.from('alunos').insert({
+      nome: linha.nome, numero: linha.numero, ra: linha.ra, turma_id: turmaId
+    });
+    if (error) comErro++; else criados++;
+  }
+
+  toast(`Importação concluída: ${criados} aluno(s) criado(s)${comErro ? `, ${comErro} com erro (duplicado ou inválido)` : ''}.`);
+  $('importar-arquivo').value = '';
+  $('importar-preview').innerHTML = '';
+  $('btn-confirmar-importacao').classList.add('hidden');
+  linhasImportacao = [];
+  await carregarTurmas();
+});
+
+// ---------------------------------------------------------------- RELATÓRIOS
+async function abrirTelaRelatorios(){
+  const sel = $('rel-escopo-select');
+  sel.innerHTML = `<option value="todas">🏫 Escola toda</option>` +
+    turmasCache.map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+
+  const hoje = new Date();
+  const trintaDiasAtras = new Date(hoje.getTime() - 30 * 24 * 60 * 60 * 1000);
+  $('rel-data-fim').value = hoje.toISOString().slice(0,10);
+  $('rel-data-inicio').value = trintaDiasAtras.toISOString().slice(0,10);
+
+  await gerarRelatorio();
+}
+
+const gruposTipo = {
+  creditos: ['deposito','transferencia_recebida','rendimento_automatico','rendimento_manual','taxa_bonus','estorno_credito'],
+  debitos: ['saque','transferencia_enviada','taxa_debito','estorno_debito'],
+  rendimentos: ['rendimento_automatico','rendimento_manual'],
+  taxas: ['taxa_debito','taxa_bonus'],
+  pix: ['transferencia_enviada','transferencia_recebida']
+};
+const rotulosRelatorio = {
+  deposito:'Depósito', saque:'Saque', transferencia_enviada:'PIX enviado', transferencia_recebida:'PIX recebido',
+  rendimento_automatico:'Juros automático', rendimento_manual:'Juros manual',
+  taxa_debito:'Taxa', taxa_bonus:'Bônus', estorno_credito:'Estorno (crédito)', estorno_debito:'Estorno (débito)'
+};
+const negativosRelatorio = ['saque','transferencia_enviada','taxa_debito','estorno_debito'];
+
+$('btn-gerar-relatorio').addEventListener('click', gerarRelatorio);
+
+async function gerarRelatorio(){
+  const escopo = $('rel-escopo-select').value;
+  const tipoFiltro = $('rel-tipo-select').value;
+  const dataInicio = $('rel-data-inicio').value;
+  const dataFim = $('rel-data-fim').value;
+
+  let query = supabase.from('vw_extrato').select('*')
+    .gte('criado_em', dataInicio + 'T00:00:00')
+    .lte('criado_em', dataFim + 'T23:59:59')
+    .order('criado_em', { ascending: false });
+
+  if (escopo !== 'todas') query = query.eq('turma_nome', turmasCache.find(t => t.id === escopo)?.nome);
+  if (tipoFiltro !== 'todos' && gruposTipo[tipoFiltro]) query = query.in('tipo', gruposTipo[tipoFiltro]);
+
+  const { data, error } = await query;
+  if (error) { toast('Erro ao gerar relatório: ' + error.message, true); return; }
+
+  ultimoRelatorio = data || [];
+  renderResumoRelatorio(ultimoRelatorio);
+  renderTabelaRelatorio(ultimoRelatorio);
+  $('btn-exportar-csv').classList.toggle('hidden', !ultimoRelatorio.length);
+}
+
+function renderResumoRelatorio(linhas){
+  const somaPorGrupo = (tipos) => linhas.filter(l => tipos.includes(l.tipo)).reduce((s, l) => s + Number(l.valor), 0);
+  const cartoes = [
+    { titulo: 'Total de créditos', valor: somaPorGrupo(gruposTipo.creditos), cor: 'var(--green)' },
+    { titulo: 'Total de débitos', valor: somaPorGrupo(gruposTipo.debitos), cor: 'var(--red)' },
+    { titulo: 'Juros pedagógicos pagos', valor: somaPorGrupo(gruposTipo.rendimentos), cor: 'var(--sun-2)' },
+    { titulo: 'Taxas e bônus', valor: somaPorGrupo(gruposTipo.taxas), cor: 'var(--coral)' },
+    { titulo: 'Total em PIX', valor: somaPorGrupo(gruposTipo.pix), cor: 'var(--mint)' },
+    { titulo: 'Nº de movimentações', valor: linhas.length, cor: 'var(--paper)', semMoeda: true }
+  ];
+  $('rel-resumo').innerHTML = cartoes.map(c => `
+    <div class="cartao" style="margin-bottom:0; text-align:center;">
+      <div style="font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em;">${c.titulo}</div>
+      <div class="mono" style="font-size:22px; font-weight:700; color:${c.cor}; margin-top:4px;">${c.semMoeda ? c.valor : fmt(c.valor)}</div>
+    </div>`).join('');
+}
+
+function renderTabelaRelatorio(linhas){
+  $('corpo-relatorio').innerHTML = linhas.map(l => {
+    const sinal = negativosRelatorio.includes(l.tipo) ? '-' : '+';
+    const classe = negativosRelatorio.includes(l.tipo) ? 'valor-neg' : 'valor-pos';
+    return `<tr>
+      <td class="mono" style="font-size:12px;">${new Date(l.criado_em).toLocaleString('pt-BR')}</td>
+      <td>${l.aluno_nome}${l.aluno_numero ? ' (Nº ' + l.aluno_numero + ')' : ''}</td>
+      <td>${l.turma_nome}</td>
+      <td>${rotulosRelatorio[l.tipo] || l.tipo}</td>
+      <td style="font-size:12.5px; color:var(--ink-soft);">${l.descricao || ''}</td>
+      <td class="mono ${classe}" style="text-align:right;">${sinal} ${fmt(l.valor)}</td>
+    </tr>`;
+  }).join('');
+}
+
+$('btn-exportar-csv').addEventListener('click', () => {
+  if (!ultimoRelatorio.length) return;
+  const cabecalho = ['Data','Aluno','Numero','Turma','Tipo','Descricao','Valor'];
+  const linhasCsv = ultimoRelatorio.map(l => [
+    new Date(l.criado_em).toLocaleString('pt-BR'),
+    l.aluno_nome, l.aluno_numero ?? '', l.turma_nome,
+    rotulosRelatorio[l.tipo] || l.tipo, (l.descricao || '').replace(/,/g, ';'), l.valor
+  ]);
+  const csv = [cabecalho, ...linhasCsv].map(linha => linha.join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'relatorio_wl_bank.csv';
+  a.click();
+  URL.revokeObjectURL(url);
 });
 </script>
 </body>
