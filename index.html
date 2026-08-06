@@ -4,15 +4,32 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WL Bank — Consulta do Aluno</title>
+<script>
+  (function(){
+    const salvo = localStorage.getItem('wlbank-tema') || 'sistema';
+    const sistemaEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const escuro = salvo === 'escuro' || (salvo === 'sistema' && sistemaEscuro);
+    document.documentElement.setAttribute('data-theme', escuro ? 'dark' : 'light');
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root{
+    --bg-950:#fff8f0; --bg-900:#ffffff; --bg-800:#fff1e0;
+    --paper:#2b2260; --sun:#ffb400; --sun-2:#ff9d00;
+    --coral:#ff6f59; --mint:#0d9488;
+    --ink-soft:#6b5f99; --green:#16a34a; --red:#e11d48;
+    --radius:16px; --border-rgb: 43,34,96; --btn-ink:#211a49;
+    --shadow: 0 8px 24px rgba(24,18,51,0.14);
+  }
+  [data-theme="dark"]{
     --bg-950:#181233; --bg-900:#211a49; --bg-800:#2b2260;
     --paper:#faf7ff; --sun:#ffc94d; --sun-2:#ffd873;
     --coral:#ff7a59; --mint:#2dd4bf;
     --ink-soft:#a79fd1; --green:#34d399; --red:#fb7185;
-    --radius:14px; --shadow: 0 8px 30px rgba(24,18,51,0.35);
+    --border-rgb: 250,247,255;
+    --shadow: 0 8px 30px rgba(0,0,0,0.45);
   }
   *{box-sizing:border-box;}
   html,body{ margin:0; min-height:100vh; background: var(--bg-950); color: var(--paper); font-family:'Nunito',sans-serif; }
@@ -39,14 +56,14 @@
     font-family:'Nunito',sans-serif; font-size:14px; font-weight:600;
     border:none; border-radius:7px; padding:10px 16px; cursor:pointer;
   }
-  .btn-gold{ background: var(--sun); color: var(--bg-950); width:100%; }
+  .btn-gold{ background: var(--sun); color: var(--btn-ink); width:100%; }
   .btn-gold:hover{ background: var(--sun-2); }
-  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(250,247,255,0.25); padding:7px 12px; font-size:12.5px; }
+  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(var(--border-rgb),0.25); padding:7px 12px; font-size:12.5px; }
   .btn-ghost:hover{ border-color: var(--sun); color: var(--sun-2); }
 
   input{
     font-family:'Nunito',sans-serif; font-size:15px; background: var(--bg-800); color: var(--paper);
-    border:1px solid rgba(250,247,255,0.18); border-radius:7px; padding:10px 12px; width:100%;
+    border:1px solid rgba(var(--border-rgb),0.18); border-radius:7px; padding:10px 12px; width:100%;
   }
   input:focus{ outline: 2px solid var(--sun); outline-offset:1px; border-color: var(--sun); }
   label{ font-size:12px; color: var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em; display:block; margin-bottom:5px; }
@@ -84,13 +101,19 @@
     border-radius:6px; padding:6px 10px; font-size:12.5px; margin:0 6px 6px 0;
   }
 
-  .recibo-linha{ display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); font-size:13.5px; }
+  .recibo-linha{ display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid rgba(var(--border-rgb),0.06); font-size:13.5px; }
   .recibo-linha:last-child{ border-bottom:none; }
   .recibo-linha .quando{ color:var(--ink-soft); font-size:11px; }
   .valor-pos{ color: var(--green); }
   .valor-neg{ color: var(--red); }
 
   .rodape-usuario{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; }
+  .toast{
+    position:fixed; bottom:24px; right:24px; left:24px; max-width:360px; margin:0 auto;
+    background: var(--bg-800); border:1px solid var(--sun); color: var(--paper); padding:12px 18px;
+    border-radius:8px; font-size:13.5px; box-shadow: var(--shadow); z-index:100;
+  }
+  .toast.erro{ border-color: var(--red); }
   .rodape-usuario .info{ font-size:13px; color:var(--ink-soft); }
 </style>
 </head>
@@ -116,6 +139,11 @@
         <small>🐷 Minha conta · Consulta do aluno</small>
       </div>
     </div>
+    <select id="seletor-tema" title="Tema" style="width:auto; padding:6px 10px; font-size:12.5px;">
+      <option value="sistema">🖥️ Sistema</option>
+      <option value="claro">☀️ Claro</option>
+      <option value="escuro">🌙 Escuro</option>
+    </select>
   </header>
 
   <div id="tela-login">
@@ -161,10 +189,55 @@
       <div class="taxa" id="valor-taxa"></div>
     </div>
 
+    <div style="background:rgba(13,148,136,0.08); border:1px solid rgba(13,148,136,0.25); border-radius:12px; padding:10px 14px; margin-bottom:18px; font-size:12.5px;">
+      🌟 Cada bom hábito conta! Continue economizando e cuidando do seu WL — é assim que ele cresce com juros.
+    </div>
+
     <div class="cartao">
       <h3>🏅 Planos de juros pedagógicos ativos</h3>
       <div id="lista-pacotes">—</div>
     </div>
+
+    <div class="cartao">
+      <h3>🔑 Minha chave PIX</h3>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+        Mostre este QR Code para o professor escanear na hora de um PIX — em vez de digitar seu RA.
+      </p>
+      <canvas id="minha-chave-canvas" style="margin:0 auto; display:block;"></canvas>
+      <div class="mono" style="text-align:center; margin-top:10px; font-size:13px;" id="minha-chave-ra"></div>
+    </div>
+
+    <div class="cartao">
+      <h3>💳 Pagar com PIX (QR Code)</h3>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+        Se o caixa da escola te mostrar um QR Code de cobrança, escaneie aqui — ou digite o código manualmente.
+      </p>
+      <button id="btn-pagar-escanear" class="btn-ghost" style="width:100%; margin-bottom:10px;">📷 Escanear cobrança</button>
+      <div id="pagar-qrcode-area"></div>
+      <div class="linha-form" style="margin-bottom:10px;">
+        <div class="field" style="margin-bottom:0;"><input type="text" id="pagar-codigo-manual" placeholder="Ou cole/digite o código aqui"></div>
+        <button id="btn-pagar-consultar" class="btn-ghost">Consultar</button>
+      </div>
+      <div id="pagar-cobranca-detalhe"></div>
+    </div>
+
+    <div class="cartao hidden" id="cartao-loja">
+      <h3>🛍️ Lojinha WL Bank</h3>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+        Compre com seu WL e retire na escola — o professor confirma a entrega pessoalmente.
+      </p>
+      <div id="lista-produtos-loja">Carregando...</div>
+      <div id="loja-carrinho" style="margin:14px 0;"></div>
+      <div style="font-weight:700; margin-bottom:12px;">Total: <span class="mono" id="loja-total">WL 0,00</span></div>
+      <button id="btn-loja-comprar" class="btn-gold" style="width:100%;">✅ Confirmar compra</button>
+      <div class="erro-modal" id="loja-erro"></div>
+    </div>
+
+    <div class="cartao hidden" id="cartao-meus-pedidos">
+      <h3>📦 Meus pedidos</h3>
+      <div id="lista-meus-pedidos">—</div>
+    </div>
+
 
     <div class="cartao">
       <h3>Extrato de movimentações</h3>
@@ -173,10 +246,99 @@
   </main>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+// ---------------------------------------------------------------- QR CODE (gerar / ler)
+function gerarQRCode(canvasEl, texto){
+  QRCode.toCanvas(canvasEl, texto, { width: 200, margin: 1 }, (err) => { if (err) console.error(err); });
+}
+
+function escanearQRCode(containerEl){
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    video.setAttribute('playsinline', true);
+    video.style.width = '100%';
+    video.style.borderRadius = '10px';
+    const canvas = document.createElement('canvas');
+    const btnCancelar = document.createElement('button');
+    btnCancelar.textContent = 'Cancelar leitura';
+    btnCancelar.className = 'btn-ghost';
+    btnCancelar.style.marginTop = '10px';
+    btnCancelar.style.width = '100%';
+
+    containerEl.innerHTML = '';
+    containerEl.appendChild(video);
+    containerEl.appendChild(btnCancelar);
+
+    let stream, animId, encerrado = false;
+
+    function encerrar(resultado){
+      if (encerrado) return;
+      encerrado = true;
+      if (animId) cancelAnimationFrame(animId);
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      containerEl.innerHTML = '';
+      resolve(resultado);
+    }
+
+    btnCancelar.addEventListener('click', () => encerrar(null));
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then((s) => {
+        stream = s;
+        video.srcObject = s;
+        video.play();
+        const ctx = canvas.getContext('2d');
+        function tick(){
+          if (encerrado) return;
+          if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imagem = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const codigo = jsQR(imagem.data, imagem.width, imagem.height);
+            if (codigo) { encerrar(codigo.data); return; }
+          }
+          animId = requestAnimationFrame(tick);
+        }
+        tick();
+      })
+      .catch(() => {
+        containerEl.innerHTML = '<p style="color:var(--red); font-size:13px;">Não foi possível acessar a câmera. Digite o código manualmente.</p>';
+        encerrado = true;
+        resolve(null);
+      });
+  });
+}
+
+// ---------------------------------------------------------------- TEMA (claro/escuro/sistema)
+(function(){
+  const select = document.getElementById('seletor-tema');
+  const salvo = localStorage.getItem('wlbank-tema') || 'sistema';
+  select.value = salvo;
+
+  function aplicarTema(preferencia){
+    const sistemaEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const escuro = preferencia === 'escuro' || (preferencia === 'sistema' && sistemaEscuro);
+    document.documentElement.setAttribute('data-theme', escuro ? 'dark' : 'light');
+  }
+
+  aplicarTema(salvo);
+
+  select.addEventListener('change', () => {
+    localStorage.setItem('wlbank-tema', select.value);
+    aplicarTema(select.value);
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if ((localStorage.getItem('wlbank-tema') || 'sistema') === 'sistema') aplicarTema('sistema');
+  });
+})();
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => 'WL ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -252,6 +414,131 @@ function renderDados(data){
         </div>`;
       }).join('')
     : '<p style="color:var(--ink-soft); font-size:13.5px;">Nenhuma movimentação ainda.</p>';
+
+  renderMeusPedidos(data.pedidos || []);
+
+  $('minha-chave-ra').textContent = 'RA: ' + data.aluno.ra;
+  gerarQRCode($('minha-chave-canvas'), 'WLPIX:' + data.aluno.ra);
+
+  if (data.loja_ativa) {
+    $('cartao-loja').classList.remove('hidden');
+    carregarProdutosLoja();
+  } else {
+    $('cartao-loja').classList.add('hidden');
+  }
+}
+
+// ---------------------------------------------------------------- LOJINHA
+let produtosLojaCache = [];
+let carrinhoAluno = [];
+
+async function carregarProdutosLoja(){
+  const { data, error } = await supabase.rpc('fn_listar_produtos_loja');
+  const cont = $('lista-produtos-loja');
+  if (error) { cont.textContent = 'Erro ao carregar produtos.'; return; }
+  produtosLojaCache = data || [];
+
+  cont.innerHTML = produtosLojaCache.length
+    ? produtosLojaCache.map(p => `
+        <div class="recibo-linha">
+          <div>
+            <div class="tipo">${p.nome}</div>
+            <div class="quando">${p.descricao || ''}${p.estoque !== null ? ` · ${p.estoque} disponível(is)` : ''}</div>
+          </div>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="mono">${fmt(p.preco)}</span>
+            <button data-add-produto="${p.id}" class="btn-ghost btn-small">+ Adicionar</button>
+          </div>
+        </div>`).join('')
+    : '<p style="color:var(--ink-soft); font-size:13.5px;">Nenhum produto disponível no momento.</p>';
+
+  cont.querySelectorAll('button[data-add-produto]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const produto = produtosLojaCache.find(p => p.id === btn.dataset.addProduto);
+      if (!produto) return;
+      const existente = carrinhoAluno.find(i => i.produto_id === produto.id);
+      if (existente) existente.quantidade += 1;
+      else carrinhoAluno.push({ produto_id: produto.id, nome: produto.nome, preco: produto.preco, quantidade: 1 });
+      renderCarrinhoAluno();
+    });
+  });
+}
+
+function renderCarrinhoAluno(){
+  const cont = $('loja-carrinho');
+  cont.innerHTML = carrinhoAluno.length
+    ? carrinhoAluno.map((item, idx) => `
+        <div class="recibo-linha">
+          <div>${item.quantidade}x ${item.nome}</div>
+          <div class="mono">
+            ${fmt(item.preco * item.quantidade)}
+            <button data-remover-carrinho="${idx}" style="background:none; border:none; color:var(--red); cursor:pointer; margin-left:8px;">✕</button>
+          </div>
+        </div>`).join('')
+    : '<p style="color:var(--ink-soft); font-size:13px;">Seu carrinho está vazio.</p>';
+
+  cont.querySelectorAll('button[data-remover-carrinho]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      carrinhoAluno.splice(parseInt(btn.dataset.removerCarrinho, 10), 1);
+      renderCarrinhoAluno();
+    });
+  });
+
+  const total = carrinhoAluno.reduce((s, i) => s + i.preco * i.quantidade, 0);
+  $('loja-total').textContent = fmt(total);
+}
+
+$('btn-loja-comprar').addEventListener('click', async () => {
+  const erroEl = $('loja-erro');
+  erroEl.textContent = '';
+  if (!carrinhoAluno.length) { erroEl.textContent = 'Seu carrinho está vazio.'; return; }
+
+  const total = carrinhoAluno.reduce((s, i) => s + i.preco * i.quantidade, 0);
+  if (!confirm(`Confirma a compra de ${fmt(total)}? O valor será debitado agora e você retira na escola.`)) return;
+
+  const ra = sessionStorage.getItem('bancowl_ra');
+  const senha = sessionStorage.getItem('bancowl_senha');
+  const itens = carrinhoAluno.map(i => ({ produto_id: i.produto_id, quantidade: i.quantidade }));
+
+  const { data, error } = await supabase.rpc('fn_aluno_comprar', { p_ra: ra, p_senha: senha, p_itens: itens });
+  if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
+
+  carrinhoAluno = [];
+  renderCarrinhoAluno();
+
+  // recarrega os dados da conta (saldo, extrato, pedidos, estoque)
+  const { data: dadosAtualizados } = await supabase.rpc('fn_login_aluno', { p_ra: ra, p_senha: senha });
+  if (dadosAtualizados) renderDados(dadosAtualizados);
+  toast(`✅ Compra de ${fmt(total)} confirmada! Retire na escola.`);
+});
+
+function renderMeusPedidos(pedidos){
+  const secao = $('cartao-meus-pedidos');
+  const cont = $('lista-meus-pedidos');
+  if (!pedidos.length) { secao.classList.add('hidden'); return; }
+  secao.classList.remove('hidden');
+
+  const rotuloStatus = { pendente: '🟡 Aguardando retirada na escola', entregue: '✅ Retirado', cancelado: '❌ Cancelado' };
+
+  cont.innerHTML = pedidos.map(p => `
+    <div class="recibo-linha" style="align-items:flex-start;">
+      <div>
+        <div class="tipo">${rotuloStatus[p.status] || p.status}</div>
+        <div class="quando">${new Date(p.criado_em).toLocaleString('pt-BR')}</div>
+        <div style="font-size:12.5px; color:var(--ink-soft); margin-top:4px;">
+          ${(p.itens || []).map(i => `${i.quantidade}x ${i.nome_produto}`).join(', ')}
+        </div>
+      </div>
+      <div class="mono" style="font-weight:700;">${fmt(p.total)}</div>
+    </div>`).join('');
+}
+
+function toast(msg, erro){
+  const el = document.createElement('div');
+  el.className = 'toast' + (erro ? ' erro' : '');
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3600);
 }
 
 // Mantém a sessão do aluno enquanto a aba estiver aberta
@@ -268,6 +555,62 @@ function renderDados(data){
   }
   renderDados(data);
 })();
+
+// ---------------------------------------------------------------- PAGAR VIA PIX QR CODE
+function extrairIdCobranca(texto){
+  const t = texto.trim();
+  return t.startsWith('WLBANK-COBRANCA:') ? t.slice('WLBANK-COBRANCA:'.length) : t;
+}
+
+async function consultarEExibirCobranca(cobrancaId){
+  const cont = $('pagar-cobranca-detalhe');
+  cont.innerHTML = 'Consultando...';
+  const { data, error } = await supabase.rpc('fn_consultar_cobranca', { p_cobranca_id: cobrancaId });
+  if (error || !data) { cont.innerHTML = '<p style="color:var(--red); font-size:13px;">Código inválido ou não encontrado.</p>'; return; }
+
+  if (data.status !== 'pendente') {
+    const msg = { paga: 'Esta cobrança já foi paga.', cancelada: 'Esta cobrança foi cancelada.', expirada: 'Esta cobrança expirou.' }[data.status];
+    cont.innerHTML = `<p style="color:var(--red); font-size:13px;">${msg}</p>`;
+    return;
+  }
+
+  const itensTexto = (data.itens || []).map(i => `${i.quantidade}x ${i.nome}`).join(', ');
+  cont.innerHTML = `
+    <div class="recibo-linha" style="align-items:flex-start;">
+      <div>
+        <div class="tipo">${data.descricao || 'Cobrança'}</div>
+        <div class="quando">${itensTexto}</div>
+      </div>
+      <div class="mono" style="font-weight:700;">${fmt(data.valor)}</div>
+    </div>
+    <button id="btn-confirmar-pagamento-cobranca" class="btn-gold" style="width:100%; margin-top:10px;">✅ Confirmar pagamento</button>`;
+
+  $('btn-confirmar-pagamento-cobranca').addEventListener('click', async () => {
+    if (!confirm(`Confirma pagar ${fmt(data.valor)}? O valor será debitado da sua conta agora.`)) return;
+    const ra = sessionStorage.getItem('bancowl_ra');
+    const senha = sessionStorage.getItem('bancowl_senha');
+    const { error: errPagar } = await supabase.rpc('fn_aluno_pagar_cobranca', { p_ra: ra, p_senha: senha, p_cobranca_id: cobrancaId });
+    if (errPagar) { toast('Erro: ' + errPagar.message.replace(/^.*: /, ''), true); return; }
+
+    cont.innerHTML = '';
+    $('pagar-codigo-manual').value = '';
+    const { data: dadosAtualizados } = await supabase.rpc('fn_login_aluno', { p_ra: ra, p_senha: senha });
+    if (dadosAtualizados) renderDados(dadosAtualizados);
+    toast(`✅ Pagamento de ${fmt(data.valor)} confirmado!`);
+  });
+}
+
+$('btn-pagar-escanear').addEventListener('click', async () => {
+  const lido = await escanearQRCode($('pagar-qrcode-area'));
+  if (!lido) return;
+  await consultarEExibirCobranca(extrairIdCobranca(lido));
+});
+
+$('btn-pagar-consultar').addEventListener('click', async () => {
+  const codigo = $('pagar-codigo-manual').value.trim();
+  if (!codigo) return;
+  await consultarEExibirCobranca(extrairIdCobranca(codigo));
+});
 </script>
 </body>
 </html>

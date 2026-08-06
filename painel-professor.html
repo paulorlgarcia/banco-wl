@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WL Bank — Painel do Professor</title>
+<script>
+  // Aplica o tema salvo (ou o do sistema) o quanto antes, pra não piscar o tema errado
+  (function(){
+    const salvo = localStorage.getItem('wlbank-tema') || 'sistema';
+    const sistemaEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const escuro = salvo === 'escuro' || (salvo === 'sistema' && sistemaEscuro);
+    document.documentElement.setAttribute('data-theme', escuro ? 'dark' : 'light');
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -13,6 +22,30 @@
      Tipografia: Baloo 2 (marca/títulos), Nunito (interface), IBM Plex Mono (valores)
      ===================================================================== */
   :root{
+    --bg-950:#fff8f0;
+    --bg-900:#ffffff;
+    --bg-800:#fff1e0;
+    --bg-700:#ffe4c9;
+    --paper:#2b2260;
+    --paper-dim:#4a3f7a;
+    --sun:#ffb400;
+    --sun-soft:#ffe08a;
+    --sun-2:#ff9d00;
+    --coral:#ff6f59;
+    --coral-2:#ff8a75;
+    --mint:#0d9488;
+    --ink:#2b2260;
+    --ink-soft:#6b5f99;
+    --green:#16a34a;
+    --red:#e11d48;
+    --radius:16px;
+    --border-rgb: 43,34,96;
+    --shadow: 0 8px 24px rgba(24,18,51,0.14);
+    --btn-ink:#211a49;
+  }
+
+  /* Tema escuro — ativado via [data-theme="dark"] no <html> */
+  [data-theme="dark"]{
     --bg-950:#181233;
     --bg-900:#211a49;
     --bg-800:#2b2260;
@@ -25,12 +58,12 @@
     --coral:#ff7a59;
     --coral-2:#ff9478;
     --mint:#2dd4bf;
-    --ink:#211a49;
+    --ink:#faf7ff;
     --ink-soft:#a79fd1;
     --green:#34d399;
     --red:#fb7185;
-    --radius:14px;
-    --shadow: 0 8px 30px rgba(24,18,51,0.35);
+    --border-rgb: 250,247,255;
+    --shadow: 0 8px 30px rgba(0,0,0,0.45);
   }
   *{box-sizing:border-box;}
   body{margin:0;}
@@ -40,7 +73,7 @@
     font-family:'Nunito',sans-serif;
     min-height:100vh;
   }
-  ::selection{ background: var(--sun); color: var(--bg-950); }
+  ::selection{ background: var(--sun); color: var(--btn-ink); }
   .mono{ font-family:'IBM Plex Mono',monospace; }
   .brand{
     font-family:'Baloo 2',sans-serif;
@@ -78,9 +111,9 @@
     transition: transform .08s ease, background .15s ease;
   }
   button:active{ transform: scale(0.98); }
-  .btn-gold{ background: var(--sun); color: var(--bg-950); }
+  .btn-gold{ background: var(--sun); color: var(--btn-ink); }
   .btn-gold:hover{ background: var(--sun-2); }
-  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(250,247,255,0.25); }
+  .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(var(--border-rgb),0.25); }
   .btn-ghost:hover{ border-color: var(--sun); color: var(--sun-2); }
   .btn-danger{ background: transparent; color: var(--red); border:1px solid rgba(251,113,133,0.5); }
   .btn-danger:hover{ background: rgba(251,113,133,0.12); }
@@ -90,7 +123,7 @@
   input, select, textarea{
     font-family:'Nunito',sans-serif; font-size:14px;
     background: var(--bg-800); color: var(--paper);
-    border:1px solid rgba(250,247,255,0.18); border-radius:7px;
+    border:1px solid rgba(var(--border-rgb),0.18); border-radius:7px;
     padding:9px 11px; width:100%;
   }
   input:focus, select:focus, textarea:focus{
@@ -146,7 +179,7 @@
     text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.06em;
     color:var(--ink-soft); padding:12px 14px; border-bottom:1px solid rgba(255,201,77,0.2);
   }
-  table.ledger td{ padding:12px 14px; border-bottom:1px solid rgba(255,255,255,0.05); font-size:14px; vertical-align:middle; }
+  table.ledger td{ padding:12px 14px; border-bottom:1px solid rgba(var(--border-rgb),0.05); font-size:14px; vertical-align:middle; }
   table.ledger tr:last-child td{ border-bottom:none; }
   table.ledger tr:hover td{ background: rgba(255,201,77,0.04); }
   .saldo{ font-weight:600; }
@@ -178,12 +211,12 @@
 
   /* extrato — estilo "recibo" com borda serrilhada */
   .recibo{
-    background: var(--paper); color: var(--ink); border-radius:4px;
+    background: var(--bg-800); color: var(--ink); border-radius:4px;
     padding:16px 18px; max-height:340px; overflow-y:auto;
-    background-image: repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(16,31,54,0.08) 9px, rgba(16,31,54,0.08) 10px);
+    background-image: repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(var(--border-rgb),0.08) 9px, rgba(var(--border-rgb),0.08) 10px);
     background-position: top; background-size: 100% 1px; background-repeat: no-repeat;
   }
-  .recibo-linha{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed rgba(16,31,54,0.18); font-size:13px; }
+  .recibo-linha{ display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px dashed rgba(var(--border-rgb),0.18); font-size:13px; }
   .recibo-linha:last-child{ border-bottom:none; }
   .recibo-linha .tipo{ font-weight:600; }
   .recibo-linha .quando{ color:var(--ink-soft); font-size:11px; }
@@ -228,12 +261,20 @@
         <small>🎓 Painel do professor · Projeto pedagógico</small>
       </div>
     </div>
-    <div class="topbar-right hidden" id="info-usuario">
-      <span id="badge-cargo" class="mono" style="background:rgba(255,201,77,0.15); color:var(--sun-2); border-radius:6px; padding:3px 9px; font-size:11px;"></span>
-      <span id="email-usuario"></span>
-      <button class="btn-ghost btn-small" id="btn-config">⚙️ Configurações</button>
-      <button class="btn-ghost btn-small" id="btn-relatorios">📊 Relatórios</button>
-      <button class="btn-ghost btn-small" id="btn-sair">Sair</button>
+    <div style="display:flex; align-items:center; gap:14px;">
+      <select id="seletor-tema" title="Tema" style="width:auto; padding:6px 10px; font-size:12.5px;">
+        <option value="sistema">🖥️ Sistema</option>
+        <option value="claro">☀️ Claro</option>
+        <option value="escuro">🌙 Escuro</option>
+      </select>
+      <div class="topbar-right hidden" id="info-usuario">
+        <span id="badge-cargo" class="mono" style="background:rgba(255,201,77,0.15); color:var(--sun-2); border-radius:6px; padding:3px 9px; font-size:11px;"></span>
+        <span id="email-usuario"></span>
+        <button class="btn-ghost btn-small" id="btn-config">⚙️ Configurações</button>
+        <button class="btn-ghost btn-small" id="btn-loja">🛍️ Loja</button>
+        <button class="btn-ghost btn-small" id="btn-relatorios">📊 Relatórios</button>
+        <button class="btn-ghost btn-small" id="btn-sair">Sair</button>
+      </div>
     </div>
   </header>
 
@@ -288,6 +329,11 @@
     </aside>
 
     <main class="conteudo">
+      <div style="background:rgba(13,148,136,0.08); border:1px solid rgba(13,148,136,0.25); border-radius:12px; padding:10px 14px; margin-bottom:18px; font-size:12.5px; color:var(--paper);">
+        🎓 <strong>Educação financeira na prática:</strong> use depósitos, juros e taxas para reconhecer bons hábitos e criar
+        consequências simbólicas — o objetivo é motivar, não punir de verdade.
+      </div>
+
       <div class="barra-titulo">
         <h2 id="titulo-turma">Selecione uma turma</h2>
         <div class="resumo" id="resumo-turma"></div>
@@ -471,6 +517,85 @@
     </div>
   </div>
 
+  <!-- TELA DA LOJA -->
+  <div id="tela-loja" class="hidden" style="flex:1; padding:26px 32px; overflow-y:auto;">
+    <div class="barra-titulo">
+      <h2 class="brand">🛍️ Loja Virtual</h2>
+      <button class="btn-ghost btn-small" id="btn-voltar-loja">← Voltar ao painel</button>
+    </div>
+
+    <div style="background:rgba(13,148,136,0.08); border:1px solid rgba(13,148,136,0.25); border-radius:12px; padding:10px 14px; margin-bottom:18px; font-size:12.5px; color:var(--paper);">
+      🎓 A lojinha é mais um jeito de trabalhar educação financeira: os alunos decidem gastar ou economizar
+      o WL que ganharam, e retiram o produto na escola depois da confirmação.
+    </div>
+
+    <div class="cartao">
+      <h3>Status da loja</h3>
+      <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:14px; margin-bottom:14px;">
+        <input type="checkbox" id="loja-ativa-checkbox" style="width:auto;">
+        Loja aberta para os alunos comprarem (visível no <code>index.html</code>)
+      </label>
+      <button id="btn-salvar-loja-ativa" class="btn-gold btn-small">Salvar</button>
+    </div>
+
+    <div class="cartao">
+      <h3>Produtos</h3>
+      <table class="ledger" style="margin-bottom:20px;">
+        <thead><tr><th>Nome</th><th>Preço</th><th>Estoque</th><th style="text-align:right;">Ações</th></tr></thead>
+        <tbody id="corpo-produtos"></tbody>
+      </table>
+
+      <h3 style="font-size:14px;">✨ Novo produto</h3>
+      <div class="grid-2">
+        <div class="field"><label>Nome</label><input type="text" id="novo-produto-nome" placeholder="Ex: Caneta colorida"></div>
+        <div class="field"><label>Preço (WL)</label><input type="number" step="0.01" min="0.01" id="novo-produto-preco" class="mono"></div>
+      </div>
+      <div class="grid-2">
+        <div class="field"><label>Estoque (deixe em branco para ilimitado)</label><input type="number" min="0" id="novo-produto-estoque"></div>
+        <div class="field"><label>Descrição (opcional)</label><input type="text" id="novo-produto-descricao"></div>
+      </div>
+      <button id="btn-criar-produto" class="btn-ghost btn-small">+ Criar produto</button>
+    </div>
+
+    <div class="cartao">
+      <h3>Pedidos da lojinha (retirada na escola)</h3>
+      <div id="lista-pedidos-loja">Carregando...</div>
+    </div>
+
+    <div class="cartao">
+      <h3>🧾 Frente de caixa (venda presencial)</h3>
+      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+        Venda direto na escola, debitando na hora do saldo do aluno. Pode ser usada por professores
+        ou por um perfil de vendedor (veja o guia de instalação para criar esse acesso restrito).
+      </p>
+      <div class="grid-2">
+        <div class="field">
+          <label>Turma do aluno</label>
+          <select id="caixa-turma-select"></select>
+        </div>
+        <div class="field">
+          <label>Aluno</label>
+          <select id="caixa-aluno-select"></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>Adicionar produto</label>
+        <select id="caixa-produto-select"></select>
+      </div>
+      <div class="linha-form" style="margin-bottom:14px;">
+        <div class="field" style="max-width:120px;"><label>Quantidade</label><input type="number" min="1" value="1" id="caixa-quantidade"></div>
+        <button id="btn-caixa-adicionar" class="btn-ghost btn-small">+ Adicionar ao carrinho</button>
+      </div>
+      <div id="caixa-carrinho" style="margin-bottom:14px;"></div>
+      <div style="font-weight:700; margin-bottom:14px;">Total: <span class="mono" id="caixa-total">WL 0,00</span></div>
+      <div class="acoes-linha">
+        <button id="btn-caixa-finalizar" class="btn-gold btn-small">✅ Finalizar venda direto</button>
+        <button id="btn-caixa-qrcode" class="btn-ghost btn-small">📱 Cobrar com QR Code</button>
+      </div>
+      <div class="erro-modal" id="caixa-erro"></div>
+    </div>
+  </div>
+
   <!-- TELA DE RELATÓRIOS -->
   <div id="tela-relatorios" class="hidden" style="flex:1; padding:26px 32px; overflow-y:auto;">
     <div class="barra-titulo">
@@ -520,10 +645,100 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 <script type="module">
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+
+// ---------------------------------------------------------------- QR CODE (gerar / ler)
+function gerarQRCode(canvasEl, texto){
+  QRCode.toCanvas(canvasEl, texto, { width: 220, margin: 1 }, (err) => { if (err) console.error(err); });
+}
+
+// Abre a câmera dentro de containerEl, tenta ler um QR Code.
+// Resolve com o texto lido, ou null se cancelado / sem câmera.
+function escanearQRCode(containerEl){
+  return new Promise((resolve) => {
+    const video = document.createElement('video');
+    video.setAttribute('playsinline', true);
+    video.style.width = '100%';
+    video.style.borderRadius = '10px';
+    const canvas = document.createElement('canvas');
+    const btnCancelar = document.createElement('button');
+    btnCancelar.textContent = 'Cancelar leitura';
+    btnCancelar.className = 'btn-ghost btn-small';
+    btnCancelar.style.marginTop = '10px';
+
+    containerEl.innerHTML = '';
+    containerEl.appendChild(video);
+    containerEl.appendChild(btnCancelar);
+
+    let stream, animId, encerrado = false;
+
+    function encerrar(resultado){
+      if (encerrado) return;
+      encerrado = true;
+      if (animId) cancelAnimationFrame(animId);
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      containerEl.innerHTML = '';
+      resolve(resultado);
+    }
+
+    btnCancelar.addEventListener('click', () => encerrar(null));
+
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+      .then((s) => {
+        stream = s;
+        video.srcObject = s;
+        video.play();
+        const ctx = canvas.getContext('2d');
+        function tick(){
+          if (encerrado) return;
+          if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imagem = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const codigo = jsQR(imagem.data, imagem.width, imagem.height);
+            if (codigo) { encerrar(codigo.data); return; }
+          }
+          animId = requestAnimationFrame(tick);
+        }
+        tick();
+      })
+      .catch(() => {
+        containerEl.innerHTML = '<p style="color:var(--red); font-size:13px;">Não foi possível acessar a câmera. Digite o código manualmente.</p>';
+        encerrado = true;
+        resolve(null);
+      });
+  });
+}
+
+// ---------------------------------------------------------------- TEMA (claro/escuro/sistema)
+(function(){
+  const select = document.getElementById('seletor-tema');
+  const salvo = localStorage.getItem('wlbank-tema') || 'sistema';
+  select.value = salvo;
+
+  function aplicarTema(preferencia){
+    const sistemaEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const escuro = preferencia === 'escuro' || (preferencia === 'sistema' && sistemaEscuro);
+    document.documentElement.setAttribute('data-theme', escuro ? 'dark' : 'light');
+  }
+
+  aplicarTema(salvo);
+
+  select.addEventListener('change', () => {
+    localStorage.setItem('wlbank-tema', select.value);
+    aplicarTema(select.value);
+  });
+
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if ((localStorage.getItem('wlbank-tema') || 'sistema') === 'sistema') aplicarTema('sistema');
+  });
+})();
 
 const fmt = (n) => 'WL ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const $ = (id) => document.getElementById(id);
@@ -603,6 +818,17 @@ $('btn-relatorios').addEventListener('click', async () => {
 
 $('btn-voltar-relatorios').addEventListener('click', () => {
   $('tela-relatorios').classList.add('hidden');
+  $('tela-app').classList.remove('hidden');
+});
+
+$('btn-loja').addEventListener('click', async () => {
+  $('tela-app').classList.add('hidden');
+  $('tela-loja').classList.remove('hidden');
+  await abrirTelaLoja();
+});
+
+$('btn-voltar-loja').addEventListener('click', () => {
+  $('tela-loja').classList.add('hidden');
   $('tela-app').classList.remove('hidden');
 });
 
@@ -830,6 +1056,7 @@ async function abrirModal(tipo, aluno){
         <select id="pix-modo">
           <option value="lista">Selecionar aluno (qualquer turma)</option>
           <option value="chave">Usar chave PIX (RA do destinatário)</option>
+          <option value="qrcode">📷 Escanear QR Code do aluno</option>
         </select>
       </div>
       <div class="field" id="pix-campo-lista">
@@ -840,6 +1067,11 @@ async function abrirModal(tipo, aluno){
         <label>Chave PIX (RA)</label>
         <input type="text" id="pix-chave-ra" placeholder="Digite o RA do destinatário">
         <div id="pix-chave-resultado" style="font-size:12.5px; color:var(--ink-soft); margin-top:6px;"></div>
+      </div>
+      <div class="field hidden" id="pix-campo-qrcode">
+        <button type="button" id="btn-pix-escanear" class="btn-ghost btn-small" style="width:100%; margin-bottom:8px;">📷 Abrir câmera</button>
+        <div id="pix-qrcode-area"></div>
+        <div id="pix-qrcode-resultado" style="font-size:12.5px; color:var(--ink-soft); margin-top:6px;"></div>
       </div>
       <div class="field"><label>Valor</label><input type="number" step="0.01" min="0.01" id="modal-valor" class="mono"></div>
       <div class="field"><label>Descrição (opcional)</label><input type="text" id="modal-descricao"></div>
@@ -868,6 +1100,7 @@ async function abrirModal(tipo, aluno){
     $('pix-modo').addEventListener('change', (e) => {
       $('pix-campo-lista').classList.toggle('hidden', e.target.value !== 'lista');
       $('pix-campo-chave').classList.toggle('hidden', e.target.value !== 'chave');
+      $('pix-campo-qrcode').classList.toggle('hidden', e.target.value !== 'qrcode');
     });
     $('pix-chave-ra').addEventListener('change', async () => {
       const ra = $('pix-chave-ra').value.trim();
@@ -878,6 +1111,18 @@ async function abrirModal(tipo, aluno){
       if (error || !data || !data.length) { resEl.textContent = '⚠️ RA não encontrado.'; return; }
       resEl.textContent = `✅ ${data[0].nome} · ${data[0].turma_nome}`;
     });
+    $('btn-pix-escanear').addEventListener('click', async () => {
+      const resEl = $('pix-qrcode-resultado');
+      resEl.textContent = '';
+      const lido = await escanearQRCode($('pix-qrcode-area'));
+      if (!lido) return;
+      const ra = lido.startsWith('WLPIX:') ? lido.slice(6) : lido;
+      resEl.textContent = 'Buscando...';
+      const { data, error } = await supabase.rpc('fn_buscar_aluno_por_ra', { p_ra: ra });
+      if (error || !data || !data.length) { resEl.textContent = '⚠️ QR Code não reconhecido.'; return; }
+      resEl.textContent = `✅ ${data[0].nome} · ${data[0].turma_nome}`;
+      $('pix-qrcode-area').dataset.raLido = ra;
+    });
   }
 
   $('modal-confirmar').addEventListener('click', async () => {
@@ -887,13 +1132,15 @@ async function abrirModal(tipo, aluno){
     if (tipo === 'pacote') {
       const pacoteId = $('modal-pacote-select').value;
       const dataInicio = $('modal-pacote-inicio').value;
+      const nomePacote = pacotesCache.find(p => p.id === pacoteId)?.nome || 'este plano';
+      if (!confirm(`Confirma atribuir o plano "${nomePacote}" a ${aluno.nome}, a partir de ${dataInicio}?`)) return;
       const { error } = await supabase.rpc('fn_atribuir_pacote', {
         p_pacote_id: pacoteId, p_aluno_ids: [aluno.id], p_data_inicio: dataInicio
       });
       if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
       overlay.remove();
       await carregarAlunos();
-      toast('Pacote atribuído ao aluno.');
+      toast(`✅ Plano "${nomePacote}" atribuído a ${aluno.nome}.`);
       return;
     }
 
@@ -902,10 +1149,11 @@ async function abrirModal(tipo, aluno){
       const confirma = $('modal-senha-confirma').value;
       if (senha.length < 4) { erroEl.textContent = 'A senha deve ter ao menos 4 caracteres.'; return; }
       if (senha !== confirma) { erroEl.textContent = 'As senhas não conferem.'; return; }
+      if (!confirm(`Confirma definir uma nova senha para ${aluno.nome}?`)) return;
       const { error } = await supabase.rpc('fn_definir_senha_aluno', { p_aluno_id: aluno.id, p_senha: senha });
       if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
       overlay.remove();
-      toast('Senha definida para o aluno.');
+      toast(`✅ Senha definida para ${aluno.nome}.`);
       return;
     }
 
@@ -915,26 +1163,39 @@ async function abrirModal(tipo, aluno){
 
     let resp;
     if (tipo === 'depositar') {
+      if (!confirm(`Confirma depositar ${fmt(valor)} para ${aluno.nome}?`)) return;
       resp = await supabase.rpc('fn_depositar', { p_aluno_id: aluno.id, p_valor: valor, p_descricao: descricao });
     } else if (tipo === 'sacar') {
+      if (!confirm(`Confirma sacar ${fmt(valor)} da conta de ${aluno.nome}?`)) return;
       resp = await supabase.rpc('fn_sacar', { p_aluno_id: aluno.id, p_valor: valor, p_descricao: descricao });
     } else if (tipo === 'pix') {
-      let destinoId;
+      let destinoId, destinoNome = 'destinatário';
       if ($('pix-modo').value === 'chave') {
         const ra = $('pix-chave-ra').value.trim();
         const { data: busca, error: errBusca } = await supabase.rpc('fn_buscar_aluno_por_ra', { p_ra: ra });
         if (errBusca || !busca || !busca.length) { erroEl.textContent = 'RA não encontrado.'; return; }
         destinoId = busca[0].aluno_id;
+        destinoNome = `${busca[0].nome} (${busca[0].turma_nome})`;
+      } else if ($('pix-modo').value === 'qrcode') {
+        const ra = $('pix-qrcode-area').dataset.raLido;
+        if (!ra) { erroEl.textContent = 'Escaneie o QR Code do aluno primeiro.'; return; }
+        const { data: busca, error: errBusca } = await supabase.rpc('fn_buscar_aluno_por_ra', { p_ra: ra });
+        if (errBusca || !busca || !busca.length) { erroEl.textContent = 'QR Code não reconhecido.'; return; }
+        destinoId = busca[0].aluno_id;
+        destinoNome = `${busca[0].nome} (${busca[0].turma_nome})`;
       } else {
-        destinoId = $('modal-destino').value;
+        const selEl = $('modal-destino');
+        destinoId = selEl.value;
+        destinoNome = selEl.options[selEl.selectedIndex]?.textContent || 'destinatário';
       }
+      if (!confirm(`Confirma enviar ${fmt(valor)} de ${aluno.nome} para ${destinoNome}?`)) return;
       resp = await supabase.rpc('fn_transferir', { p_aluno_origem_id: aluno.id, p_aluno_destino_id: destinoId, p_valor: valor, p_descricao: descricao });
     }
 
     if (resp.error) { erroEl.textContent = resp.error.message.replace(/^.*: /, ''); return; }
     overlay.remove();
     await carregarAlunos();
-    toast(`${titulos[tipo]} realizado com sucesso.`);
+    toast(`✅ ${titulos[tipo]} concluído com sucesso.`);
   });
 }
 
@@ -1003,13 +1264,14 @@ async function carregarExtrato(alunoId){
 
   cont.querySelectorAll('.btn-estornar-tx').forEach(btn => {
     btn.addEventListener('click', async () => {
+      if (!confirm('Tem certeza que deseja estornar esta transação? Essa ação reverte o valor imediatamente.')) return;
       const motivo = prompt('Descreva o motivo do estorno:');
       if (motivo === null || motivo.trim() === '') { if (motivo !== null) toast('Informe uma descrição para o estorno.', true); return; }
       const { error } = await supabase.rpc('fn_estornar_transacao', { p_transacao_id: btn.dataset.id, p_descricao: motivo.trim() });
       if (error) { toast('Erro: ' + error.message, true); return; }
       await carregarExtrato(alunoId);
       await carregarAlunos();
-      toast('Transação estornada.');
+      toast('✅ Transação estornada com sucesso.');
     });
   });
 }
@@ -1191,11 +1453,14 @@ $('btn-atribuir-pacote').addEventListener('click', async () => {
   if (!pacoteId) { erroEl.textContent = 'Crie um pacote personalizado primeiro.'; return; }
   if (!alunoIds.length) { erroEl.textContent = 'Selecione ao menos um aluno.'; return; }
 
+  const nomePacote = $('atribuir-pacote-select').selectedOptions[0]?.textContent || 'este plano';
+  if (!confirm(`Confirma atribuir "${nomePacote}" a ${alunoIds.length} aluno(s), a partir de ${dataInicio}?`)) return;
+
   const { error } = await supabase.rpc('fn_atribuir_pacote', {
     p_pacote_id: pacoteId, p_aluno_ids: alunoIds, p_data_inicio: dataInicio
   });
   if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
-  toast(`Pacote atribuído a ${alunoIds.length} aluno(s).`);
+  toast(`✅ Plano atribuído a ${alunoIds.length} aluno(s).`);
 });
 
 // ---------------------------------------------------------------- RENDIMENTO MANUAL
@@ -1205,6 +1470,9 @@ $('btn-render-manual').addEventListener('click', async () => {
   const taxa = parseFloat(taxaTexto);
   if (!taxa) { toast('Taxa inválida.', true); return; }
 
+  const nomeTurmaAtual = turmasCache.find(t => t.id === turmaAtualId)?.nome || 'turma atual';
+  if (!confirm(`Confirma aplicar ${taxa}% de juros pedagógico manual para toda a turma "${nomeTurmaAtual}"?`)) return;
+
   const { error } = await supabase.rpc('fn_aplicar_rendimento_manual', {
     p_taxa: taxa,
     p_turma_id: turmaAtualId,
@@ -1212,7 +1480,7 @@ $('btn-render-manual').addEventListener('click', async () => {
   });
   if (error) { toast('Erro: ' + error.message, true); return; }
   await carregarAlunos();
-  toast(`Juros pedagógico de ${taxa}% aplicado à turma.`);
+  toast(`✅ Juros pedagógico de ${taxa}% aplicado à turma "${nomeTurmaAtual}".`);
 });
 
 // ---------------------------------------------------------------- HELPERS DE ESCOPO (reutilizados por lote/taxa)
@@ -1266,9 +1534,11 @@ $('btn-lote-depositar').addEventListener('click', async () => {
   if (!valor || valor <= 0) { erroEl.textContent = 'Informe um valor válido.'; return; }
   if (!alunoIds.length) { erroEl.textContent = 'Selecione ao menos um aluno.'; return; }
 
+  if (!confirm(`Confirma depositar ${fmt(valor)} para ${alunoIds.length} aluno(s)?`)) return;
+
   const { error } = await supabase.rpc('fn_depositar_lote', { p_aluno_ids: alunoIds, p_valor: valor, p_descricao: descricao });
   if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
-  toast(`💰 WL ${valor} depositado para ${alunoIds.length} aluno(s).`);
+  toast(`✅ ${fmt(valor)} depositado para ${alunoIds.length} aluno(s).`);
   $('lote-valor').value = '';
   $('lote-descricao').value = '';
 });
@@ -1366,9 +1636,12 @@ $('btn-aplicar-taxa').addEventListener('click', async () => {
   if (!motivoId) { erroEl.textContent = 'Crie um motivo primeiro.'; return; }
   if (!alunoIds.length) { erroEl.textContent = 'Selecione ao menos um aluno.'; return; }
 
+  const nomeMotivo = $('taxa-motivo-select').selectedOptions[0]?.textContent || 'este motivo';
+  if (!confirm(`Confirma aplicar "${nomeMotivo}" a ${alunoIds.length} aluno(s)?`)) return;
+
   const { error } = await supabase.rpc('fn_aplicar_taxa', { p_motivo_id: motivoId, p_aluno_ids: alunoIds, p_descricao: descricao });
   if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
-  toast(`Taxa aplicada a ${alunoIds.length} aluno(s).`);
+  toast(`✅ Taxa aplicada a ${alunoIds.length} aluno(s).`);
 });
 
 // ---------------------------------------------------------------- IMPORTAR PLANILHA
@@ -1560,6 +1833,316 @@ $('btn-exportar-csv').addEventListener('click', () => {
   a.click();
   URL.revokeObjectURL(url);
 });
+
+// ---------------------------------------------------------------- LOJA VIRTUAL
+let produtosCache = [];
+let carrinhoCaixa = [];
+
+async function abrirTelaLoja(){
+  const { data: cfg } = await supabase.from('configuracoes').select('loja_ativa').eq('id', 1).single();
+  $('loja-ativa-checkbox').checked = !!cfg?.loja_ativa;
+
+  await carregarProdutosCache();
+  renderTabelaProdutos();
+  popularSelectProdutoCaixa();
+
+  popularSelectEscopo('caixa-turma-select', async (escopo) => {
+    const alunos = escopo === 'todas' ? await carregarAlunosPorEscopo('todas') : await carregarAlunosPorEscopo(escopo);
+    const sel = $('caixa-aluno-select');
+    sel.innerHTML = alunos.map(a => `<option value="${a.id}">${a.numero ? a.numero + ' — ' : ''}${a.nome}</option>`).join('');
+  });
+  // troca "Escola toda" por texto mais apropriado ao contexto do caixa
+  $('caixa-turma-select').options[0].textContent = '🏫 Todas as turmas';
+
+  carrinhoCaixa = [];
+  renderCarrinhoCaixa();
+  await carregarPedidosLoja();
+}
+
+$('btn-salvar-loja-ativa').addEventListener('click', async () => {
+  const ativa = $('loja-ativa-checkbox').checked;
+  const { error } = await supabase.from('configuracoes').update({ loja_ativa: ativa }).eq('id', 1);
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  toast(ativa ? '✅ Loja aberta para os alunos.' : '🔒 Loja fechada.');
+});
+
+async function carregarProdutosCache(){
+  const { data, error } = await supabase.from('produtos').select('*').order('nome');
+  if (error) { toast('Erro ao carregar produtos: ' + error.message, true); return; }
+  produtosCache = data || [];
+}
+
+function renderTabelaProdutos(){
+  $('corpo-produtos').innerHTML = produtosCache.map(p => `
+    <tr>
+      <td>${p.nome}${p.ativo ? '' : ' <span style="color:var(--ink-soft); font-size:11px;">(inativo)</span>'}</td>
+      <td class="mono">${fmt(p.preco)}</td>
+      <td class="mono">${p.estoque === null ? '∞' : p.estoque}</td>
+      <td>
+        <div class="acoes-linha" style="justify-content:flex-end;">
+          <button class="btn-ghost btn-small" data-editar-produto="${p.id}">Editar</button>
+          <button class="btn-danger btn-small" data-excluir-produto="${p.id}">Excluir</button>
+        </div>
+      </td>
+    </tr>`).join('');
+
+  document.querySelectorAll('button[data-editar-produto]').forEach(btn => {
+    btn.addEventListener('click', () => editarProduto(btn.dataset.editarProduto));
+  });
+  document.querySelectorAll('button[data-excluir-produto]').forEach(btn => {
+    btn.addEventListener('click', () => excluirProduto(btn.dataset.excluirProduto));
+  });
+}
+
+async function editarProduto(id){
+  const produto = produtosCache.find(p => p.id === id);
+  if (!produto) return;
+  const novoNome = prompt('Nome do produto:', produto.nome);
+  if (novoNome === null) return;
+  const novoPrecoTexto = prompt('Preço (WL):', produto.preco);
+  if (novoPrecoTexto === null) return;
+  const novoPreco = parseFloat(novoPrecoTexto);
+  if (isNaN(novoPreco) || novoPreco <= 0) { toast('Preço inválido.', true); return; }
+  const novoEstoqueTexto = prompt('Estoque (deixe em branco para ilimitado):', produto.estoque ?? '');
+  if (novoEstoqueTexto === null) return;
+  const ativo = confirm('Clique OK para manter o produto ATIVO, ou Cancelar para desativá-lo (deixa de aparecer na loja).');
+
+  const { error } = await supabase.from('produtos').update({
+    nome: novoNome.trim() || produto.nome,
+    preco: novoPreco,
+    estoque: novoEstoqueTexto.trim() === '' ? null : parseInt(novoEstoqueTexto, 10),
+    ativo
+  }).eq('id', id);
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  await carregarProdutosCache();
+  renderTabelaProdutos();
+  popularSelectProdutoCaixa();
+  toast('✅ Produto atualizado.');
+}
+
+async function excluirProduto(id){
+  const produto = produtosCache.find(p => p.id === id);
+  if (!confirm(`Excluir o produto "${produto?.nome}"? Pedidos já feitos com ele continuam no histórico.`)) return;
+  const { error } = await supabase.from('produtos').delete().eq('id', id);
+  if (error) { toast('Erro: ' + error.message, true); return; }
+  await carregarProdutosCache();
+  renderTabelaProdutos();
+  popularSelectProdutoCaixa();
+  toast('Produto excluído.');
+}
+
+$('btn-criar-produto').addEventListener('click', async () => {
+  const nome = $('novo-produto-nome').value.trim();
+  const preco = parseFloat($('novo-produto-preco').value);
+  const estoqueTexto = $('novo-produto-estoque').value.trim();
+  const descricao = $('novo-produto-descricao').value.trim() || null;
+
+  if (!nome) { toast('Informe o nome do produto.', true); return; }
+  if (!preco || preco <= 0) { toast('Informe um preço válido.', true); return; }
+
+  const { error } = await supabase.from('produtos').insert({
+    nome, preco, descricao,
+    estoque: estoqueTexto === '' ? null : parseInt(estoqueTexto, 10)
+  });
+  if (error) { toast('Erro: ' + error.message, true); return; }
+
+  $('novo-produto-nome').value = '';
+  $('novo-produto-preco').value = '';
+  $('novo-produto-estoque').value = '';
+  $('novo-produto-descricao').value = '';
+  await carregarProdutosCache();
+  renderTabelaProdutos();
+  popularSelectProdutoCaixa();
+  toast('✅ Produto criado.');
+});
+
+async function carregarPedidosLoja(){
+  const cont = $('lista-pedidos-loja');
+  const { data, error } = await supabase
+    .from('pedidos')
+    .select('*, alunos(nome, numero, turmas(nome)), itens_pedido(nome_produto, quantidade, subtotal)')
+    .eq('origem', 'loja')
+    .order('criado_em', { ascending: false })
+    .limit(50);
+
+  if (error) { cont.textContent = 'Erro ao carregar pedidos: ' + error.message; return; }
+  if (!data.length) { cont.innerHTML = '<p style="color:var(--ink-soft); font-size:13.5px;">Nenhum pedido ainda.</p>'; return; }
+
+  const rotuloStatus = { pendente: '🟡 Aguardando retirada', entregue: '✅ Entregue', cancelado: '❌ Cancelado' };
+
+  cont.innerHTML = data.map(p => `
+    <div class="recibo-linha" style="align-items:flex-start;">
+      <div>
+        <div class="tipo">${p.alunos?.nome || 'Aluno'}${p.alunos?.numero ? ' (Nº ' + p.alunos.numero + ')' : ''} · ${p.alunos?.turmas?.nome || ''}</div>
+        <div class="quando">${new Date(p.criado_em).toLocaleString('pt-BR')} · ${rotuloStatus[p.status]}</div>
+        <div style="font-size:12.5px; color:var(--ink-soft); margin-top:4px;">
+          ${(p.itens_pedido || []).map(i => `${i.quantidade}x ${i.nome_produto}`).join(', ')}
+        </div>
+        ${p.status === 'pendente' ? `
+          <div class="acoes-linha" style="margin-top:8px;">
+            <button class="btn-gold btn-small" data-entregar="${p.id}">✅ Confirmar entrega</button>
+            <button class="btn-danger btn-small" data-cancelar-pedido="${p.id}">Cancelar</button>
+          </div>` : ''}
+      </div>
+      <div class="mono" style="font-weight:700;">${fmt(p.total)}</div>
+    </div>`).join('');
+
+  cont.querySelectorAll('button[data-entregar]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if (!confirm('Confirma que o aluno retirou o produto na escola?')) return;
+      const { error } = await supabase.rpc('fn_confirmar_entrega', { p_pedido_id: btn.dataset.entregar });
+      if (error) { toast('Erro: ' + error.message, true); return; }
+      await carregarPedidosLoja();
+      toast('✅ Entrega confirmada.');
+    });
+  });
+  cont.querySelectorAll('button[data-cancelar-pedido]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const motivo = prompt('Motivo do cancelamento (o valor será devolvido ao aluno):');
+      if (motivo === null || motivo.trim() === '') { if (motivo !== null) toast('Informe um motivo.', true); return; }
+      const { error } = await supabase.rpc('fn_cancelar_pedido', { p_pedido_id: btn.dataset.cancelarPedido, p_motivo: motivo.trim() });
+      if (error) { toast('Erro: ' + error.message, true); return; }
+      await carregarPedidosLoja();
+      toast('Pedido cancelado e valor devolvido.');
+    });
+  });
+}
+
+// ---------------------------------------------------------------- FRENTE DE CAIXA
+function popularSelectProdutoCaixa(){
+  const sel = $('caixa-produto-select');
+  const disponiveis = produtosCache.filter(p => p.ativo && (p.estoque === null || p.estoque > 0));
+  sel.innerHTML = disponiveis.length
+    ? disponiveis.map(p => `<option value="${p.id}">${p.nome} — ${fmt(p.preco)}${p.estoque !== null ? ` (${p.estoque} em estoque)` : ''}</option>`).join('')
+    : `<option value="">Nenhum produto disponível</option>`;
+}
+
+$('btn-caixa-adicionar').addEventListener('click', () => {
+  const produtoId = $('caixa-produto-select').value;
+  const quantidade = parseInt($('caixa-quantidade').value, 10) || 1;
+  const produto = produtosCache.find(p => p.id === produtoId);
+  if (!produto) { toast('Selecione um produto.', true); return; }
+
+  const existente = carrinhoCaixa.find(i => i.produto_id === produtoId);
+  if (existente) existente.quantidade += quantidade;
+  else carrinhoCaixa.push({ produto_id: produtoId, nome: produto.nome, preco: produto.preco, quantidade });
+
+  renderCarrinhoCaixa();
+});
+
+function renderCarrinhoCaixa(){
+  const cont = $('caixa-carrinho');
+  if (!carrinhoCaixa.length) {
+    cont.innerHTML = '<p style="color:var(--ink-soft); font-size:13px;">Carrinho vazio.</p>';
+  } else {
+    cont.innerHTML = carrinhoCaixa.map((item, idx) => `
+      <div class="recibo-linha">
+        <div>${item.quantidade}x ${item.nome}</div>
+        <div class="mono">
+          ${fmt(item.preco * item.quantidade)}
+          <button data-remover-item="${idx}" style="background:none; border:none; color:var(--red); cursor:pointer; margin-left:8px;">✕</button>
+        </div>
+      </div>`).join('');
+    cont.querySelectorAll('button[data-remover-item]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        carrinhoCaixa.splice(parseInt(btn.dataset.removerItem, 10), 1);
+        renderCarrinhoCaixa();
+      });
+    });
+  }
+  const total = carrinhoCaixa.reduce((s, i) => s + i.preco * i.quantidade, 0);
+  $('caixa-total').textContent = fmt(total);
+}
+
+$('btn-caixa-finalizar').addEventListener('click', async () => {
+  const erroEl = $('caixa-erro');
+  erroEl.textContent = '';
+  const alunoId = $('caixa-aluno-select').value;
+  const alunoNome = $('caixa-aluno-select').selectedOptions[0]?.textContent || 'aluno';
+
+  if (!alunoId) { erroEl.textContent = 'Selecione o aluno.'; return; }
+  if (!carrinhoCaixa.length) { erroEl.textContent = 'Adicione ao menos um produto ao carrinho.'; return; }
+
+  const total = carrinhoCaixa.reduce((s, i) => s + i.preco * i.quantidade, 0);
+  if (!confirm(`Confirma a venda de ${fmt(total)} para ${alunoNome}? O valor será debitado na hora.`)) return;
+
+  const itens = carrinhoCaixa.map(i => ({ produto_id: i.produto_id, quantidade: i.quantidade }));
+  const { error } = await supabase.rpc('fn_professor_vender', { p_aluno_id: alunoId, p_itens: itens });
+  if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
+
+  carrinhoCaixa = [];
+  renderCarrinhoCaixa();
+  await carregarProdutosCache();
+  popularSelectProdutoCaixa();
+  toast(`✅ Venda de ${fmt(total)} concluída para ${alunoNome}.`);
+});
+
+// ---------------------------------------------------------------- COBRANÇA VIA QR CODE (caixa)
+$('btn-caixa-qrcode').addEventListener('click', async () => {
+  const erroEl = $('caixa-erro');
+  erroEl.textContent = '';
+  if (!carrinhoCaixa.length) { erroEl.textContent = 'Adicione ao menos um produto ao carrinho.'; return; }
+
+  const total = carrinhoCaixa.reduce((s, i) => s + i.preco * i.quantidade, 0);
+  const itens = carrinhoCaixa.map(i => ({ produto_id: i.produto_id, nome: i.nome, quantidade: i.quantidade, preco_unitario: i.preco }));
+
+  const { data: cobrancaId, error } = await supabase.rpc('fn_criar_cobranca', {
+    p_valor: total, p_descricao: 'Compra na lojinha WL Bank', p_itens: itens
+  });
+  if (error) { erroEl.textContent = error.message.replace(/^.*: /, ''); return; }
+
+  abrirModalCobranca(cobrancaId, total);
+});
+
+function abrirModalCobranca(cobrancaId, total){
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal" style="text-align:center;">
+      <header><h3>📱 Aguardando pagamento</h3><button class="fechar-x" id="cobranca-fechar">✕</button></header>
+      <p style="font-size:13.5px; margin-top:0;">Peça para o aluno abrir a página dele e escanear este código.</p>
+      <canvas id="cobranca-canvas" style="margin:0 auto; display:block;"></canvas>
+      <div style="font-weight:700; margin:14px 0;" class="mono">${fmt(total)}</div>
+      <div id="cobranca-status" style="font-size:13px; color:var(--ink-soft);">🟡 Aguardando o aluno confirmar...</div>
+      <button id="cobranca-cancelar" class="btn-danger btn-small" style="margin-top:14px;">Cancelar cobrança</button>
+    </div>`;
+  document.body.appendChild(overlay);
+  gerarQRCode($('cobranca-canvas'), 'WLBANK-COBRANCA:' + cobrancaId);
+
+  let encerrado = false;
+  const intervalo = setInterval(async () => {
+    if (encerrado) return;
+    const { data } = await supabase.rpc('fn_consultar_cobranca', { p_cobranca_id: cobrancaId });
+    if (!data) return;
+    if (data.status === 'paga') {
+      encerrado = true;
+      clearInterval(intervalo);
+      $('cobranca-status').innerHTML = '✅ <strong>Pagamento confirmado!</strong>';
+      carrinhoCaixa = [];
+      renderCarrinhoCaixa();
+      await carregarProdutosCache();
+      popularSelectProdutoCaixa();
+      toast(`✅ Cobrança de ${fmt(total)} paga pelo aluno via QR Code.`);
+      setTimeout(() => overlay.remove(), 1800);
+    } else if (data.status === 'expirada' || data.status === 'cancelada') {
+      encerrado = true;
+      clearInterval(intervalo);
+      $('cobranca-status').textContent = data.status === 'expirada' ? '⏱️ Cobrança expirou.' : '❌ Cobrança cancelada.';
+    }
+  }, 3000);
+
+  function fecharModal(){
+    encerrado = true;
+    clearInterval(intervalo);
+    overlay.remove();
+  }
+  $('cobranca-fechar').addEventListener('click', fecharModal);
+  $('cobranca-cancelar').addEventListener('click', async () => {
+    await supabase.rpc('fn_cancelar_cobranca', { p_cobranca_id: cobrancaId });
+    fecharModal();
+    toast('Cobrança cancelada.');
+  });
+}
 </script>
 </body>
 </html>
