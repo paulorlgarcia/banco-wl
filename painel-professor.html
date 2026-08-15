@@ -28,12 +28,14 @@
     --bg-700:#ffe4c9;
     --paper:#2b2260;
     --paper-dim:#4a3f7a;
-    --sun:#ffb400;
+    --sun:#ffb100;
     --sun-soft:#ffe08a;
-    --sun-2:#ff9d00;
-    --coral:#ff6f59;
+    --sun-2:#ff9500;
+    --coral:#ff5c7a;
     --coral-2:#ff8a75;
-    --mint:#0d9488;
+    --mint:#00b88f;
+    --violet:#8b5cf6;
+    --pink:#ec4899;
     --ink:#2b2260;
     --ink-soft:#6b5f99;
     --green:#16a34a;
@@ -42,6 +44,7 @@
     --border-rgb: 43,34,96;
     --shadow: 0 8px 24px rgba(24,18,51,0.14);
     --btn-ink:#211a49;
+    --gradiente-alegre: linear-gradient(135deg, var(--sun), var(--coral));
   }
 
   /* Tema escuro — ativado via [data-theme="dark"] no <html> */
@@ -52,14 +55,16 @@
     --bg-700:#372c78;
     --paper:#faf7ff;
     --paper-dim:#e8e2fb;
-    --sun:#ffc94d;
+    --sun:#ffcf4d;
     --sun-soft:#ffe08a;
     --sun-2:#ffd873;
-    --coral:#ff7a59;
+    --coral:#ff7a90;
     --coral-2:#ff9478;
     --mint:#2dd4bf;
+    --violet:#a78bfa;
+    --pink:#f472b6;
     --ink:#faf7ff;
-    --ink-soft:#a79fd1;
+    --ink-soft:#b6adda;
     --green:#34d399;
     --red:#fb7185;
     --border-rgb: 250,247,255;
@@ -90,16 +95,17 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:18px 28px;
     background: linear-gradient(180deg, var(--bg-900), var(--bg-950));
-    border-bottom: 1px solid rgba(255,201,77,0.25);
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, var(--sun), var(--coral), var(--violet), var(--mint)) 1;
   }
   .wordmark{ display:flex; align-items:center; gap:12px; }
   .seal{
     width:38px; height:38px; border-radius:50%;
-    border:2px solid var(--sun);
+    background: var(--gradiente-alegre);
     display:flex; align-items:center; justify-content:center;
-    font-family:'Baloo 2',sans-serif; font-weight:700; color:var(--sun);
+    font-family:'Baloo 2',sans-serif; font-weight:700; color:#fff;
     font-size:15px;
-    box-shadow: inset 0 0 0 3px rgba(255,201,77,0.12);
+    box-shadow: 0 3px 10px rgba(255,92,122,0.35);
   }
   .wordmark h1{ font-size:20px; margin:0; color:var(--paper); }
   .wordmark small{ display:block; color:var(--ink-soft); font-size:11px; letter-spacing:0.08em; text-transform:uppercase; }
@@ -108,11 +114,11 @@
   button, .btn{
     font-family:'Nunito',sans-serif; font-size:14px; font-weight:600;
     border:none; border-radius:7px; padding:9px 16px; cursor:pointer;
-    transition: transform .08s ease, background .15s ease;
+    transition: transform .08s ease, background .15s ease, box-shadow .15s ease;
   }
   button:active{ transform: scale(0.98); }
-  .btn-gold{ background: var(--sun); color: var(--btn-ink); }
-  .btn-gold:hover{ background: var(--sun-2); }
+  .btn-gold{ background: var(--gradiente-alegre); color: #fff; box-shadow: 0 3px 10px rgba(255,92,122,0.3); }
+  .btn-gold:hover{ box-shadow: 0 5px 14px rgba(255,92,122,0.45); }
   .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(var(--border-rgb),0.25); }
   .btn-ghost:hover{ border-color: var(--sun); color: var(--sun-2); }
   .btn-danger{ background: transparent; color: var(--red); border:1px solid rgba(251,113,133,0.5); }
@@ -187,6 +193,7 @@
 
   .cartao{
     background: var(--bg-900); border:1px solid rgba(255,201,77,0.18);
+    border-top: 4px solid var(--mint);
     border-radius: var(--radius); padding:20px; margin-bottom:20px;
   }
   .cartao h3{ font-family:'Baloo 2',sans-serif; font-size:16px; margin:0 0 14px; color: var(--sun-2); }
@@ -386,7 +393,7 @@
       <h3>🏅 Planos de Juros Pedagógicos</h3>
       <table class="ledger" style="margin-bottom:22px;">
         <thead>
-          <tr><th>Nome</th><th>Tipo</th><th>Taxa diária</th><th>Duração</th><th style="text-align:right;">Ações</th></tr>
+          <tr><th>Nome</th><th>Tipo</th><th>Taxa mensal</th><th>Duração</th><th style="text-align:right;">Ações</th></tr>
         </thead>
         <tbody id="corpo-pacotes"></tbody>
       </table>
@@ -394,7 +401,7 @@
       <h3 style="font-size:14px;">✨ Novo plano personalizado</h3>
       <div class="grid-2">
         <div class="field"><label>Nome do pacote</label><input type="text" id="novo-pacote-nome" placeholder="Ex: Bônus Feira de Ciências"></div>
-        <div class="field"><label>Taxa diária (%)</label><input type="number" step="0.01" id="novo-pacote-taxa" class="mono" placeholder="Ex: 0.20"></div>
+        <div class="field"><label>Taxa mensal (%)</label><input type="number" step="0.01" id="novo-pacote-taxa" class="mono" placeholder="Ex: 6"></div>
       </div>
       <div class="grid-2">
         <div class="field">
@@ -916,10 +923,11 @@ function renderAlunos(){
     const saldo = aluno.contas?.saldo ?? 0;
     total += Number(saldo);
     const taxaTotal = Number(aluno._taxa?.taxa_total ?? 0);
+    const taxaTotalMensal = taxaTotal * 30;
 
     const tagsPacotes = (aluno._pacotes || []).map(p => `
       <span class="mono" style="display:inline-flex; align-items:center; gap:4px; background:rgba(255,201,77,0.14); color:var(--sun-2); border-radius:5px; padding:2px 7px; font-size:11px; margin:2px 4px 0 0;">
-        ${p.nome} (+${Number(p.taxa_diaria)}%)
+        ${p.nome} (+${Number(p.taxa_mensal)}%/mês)
         <button data-remover-pacote="${p.conta_pacote_id}" title="Remover" style="background:none; border:none; color:var(--sun-2); cursor:pointer; padding:0; font-size:12px;">✕</button>
       </span>`).join('');
 
@@ -930,7 +938,7 @@ function renderAlunos(){
       <td class="mono">${aluno.ra ?? '—'}</td>
       <td class="mono saldo">${fmt(saldo)}</td>
       <td>
-        <div class="mono" style="font-size:12.5px; color:var(--ink-soft);">${taxaTotal.toFixed(2)}%/dia</div>
+        <div class="mono" style="font-size:12.5px; color:var(--ink-soft);">${taxaTotalMensal.toFixed(2)}%/mês (${taxaTotal.toFixed(3)}%/dia)</div>
         <div>${tagsPacotes}</div>
       </td>
       <td>
@@ -1037,7 +1045,7 @@ async function abrirModal(tipo, aluno){
       corpo = `
         <div class="field">
           <label>Pacote</label>
-          <select id="modal-pacote-select">${disponiveis.map(p => `<option value="${p.id}">${p.nome}${p.tipo === 'base' ? ' (Básico)' : ''} (+${p.taxa_diaria}%/dia${p.duracao_dias ? ', ' + p.duracao_dias + ' dias' : ', sem prazo'})</option>`).join('')}</select>
+          <select id="modal-pacote-select">${disponiveis.map(p => `<option value="${p.id}">${p.nome}${p.tipo === 'base' ? ' (Básico)' : ''} (+${p.taxa_mensal}%/mês${p.duracao_dias ? ', ' + p.duracao_dias + ' dias' : ', sem prazo'})</option>`).join('')}</select>
         </div>
         <div class="field"><label>Início</label><input type="date" id="modal-pacote-inicio" value="${new Date().toISOString().slice(0,10)}"></div>
         <button class="btn-gold" id="modal-confirmar" style="width:100%;">Atribuir pacote</button>
@@ -1317,7 +1325,7 @@ function renderTabelaPacotes(){
     tr.innerHTML = `
       <td>${p.nome}</td>
       <td>${p.tipo === 'base' ? 'Básico (todos)' : 'Personalizado'}</td>
-      <td class="mono">${Number(p.taxa_diaria)}%</td>
+      <td class="mono">${Number(p.taxa_mensal)}%</td>
       <td>${duracaoTexto}</td>
       <td>
         <div class="acoes-linha" style="justify-content:flex-end;">
@@ -1341,12 +1349,12 @@ async function editarPacote(id){
   if (!pacote) return;
   const novoNome = prompt('Nome do pacote:', pacote.nome);
   if (novoNome === null) return;
-  const novaTaxaTexto = prompt('Taxa diária (%):', pacote.taxa_diaria);
+  const novaTaxaTexto = prompt('Taxa mensal (%):', pacote.taxa_mensal);
   if (novaTaxaTexto === null) return;
   const novaTaxa = parseFloat(novaTaxaTexto);
   if (isNaN(novaTaxa)) { toast('Taxa inválida.', true); return; }
 
-  const atualizacao = { nome: novoNome.trim() || pacote.nome, taxa_diaria: novaTaxa };
+  const atualizacao = { nome: novoNome.trim() || pacote.nome, taxa_mensal: novaTaxa };
 
   if (pacote.tipo !== 'base') {
     const novaDuracaoTexto = prompt('Duração em dias (deixe em branco para sem prazo):', pacote.duracao_dias ?? '');
@@ -1385,7 +1393,7 @@ $('btn-criar-pacote').addEventListener('click', async () => {
   if (isNaN(taxa)) { toast('Informe uma taxa válida.', true); return; }
 
   const { error } = await supabase.from('pacotes_juros').insert({
-    nome, taxa_diaria: taxa, tipo: 'personalizado', duracao_dias: duracaoDias, descricao
+    nome, taxa_mensal: taxa, tipo: 'personalizado', duracao_dias: duracaoDias, descricao
   });
   if (error) { toast('Erro: ' + error.message, true); return; }
 
@@ -1403,7 +1411,7 @@ function popularSelectPacotes(){
   const sel = $('atribuir-pacote-select');
   const disponiveis = pacotesCache.filter(p => p.ativo);
   sel.innerHTML = disponiveis.length
-    ? disponiveis.map(p => `<option value="${p.id}">${p.nome}${p.tipo === 'base' ? ' (Básico)' : ''} (+${p.taxa_diaria}%/dia)</option>`).join('')
+    ? disponiveis.map(p => `<option value="${p.id}">${p.nome}${p.tipo === 'base' ? ' (Básico)' : ''} (+${p.taxa_mensal}%/mês)</option>`).join('')
     : `<option value="">Nenhum pacote criado</option>`;
 }
 

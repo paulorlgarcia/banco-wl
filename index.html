@@ -17,17 +17,18 @@
 <style>
   :root{
     --bg-950:#fff8f0; --bg-900:#ffffff; --bg-800:#fff1e0;
-    --paper:#2b2260; --sun:#ffb400; --sun-2:#ff9d00;
-    --coral:#ff6f59; --mint:#0d9488;
+    --paper:#2b2260; --sun:#ffb100; --sun-2:#ff9500;
+    --coral:#ff5c7a; --mint:#00b88f; --violet:#8b5cf6; --pink:#ec4899;
     --ink-soft:#6b5f99; --green:#16a34a; --red:#e11d48;
     --radius:16px; --border-rgb: 43,34,96; --btn-ink:#211a49;
     --shadow: 0 8px 24px rgba(24,18,51,0.14);
+    --gradiente-alegre: linear-gradient(135deg, var(--sun), var(--coral));
   }
   [data-theme="dark"]{
     --bg-950:#181233; --bg-900:#211a49; --bg-800:#2b2260;
-    --paper:#faf7ff; --sun:#ffc94d; --sun-2:#ffd873;
-    --coral:#ff7a59; --mint:#2dd4bf;
-    --ink-soft:#a79fd1; --green:#34d399; --red:#fb7185;
+    --paper:#faf7ff; --sun:#ffcf4d; --sun-2:#ffd873;
+    --coral:#ff7a90; --mint:#2dd4bf; --violet:#a78bfa; --pink:#f472b6;
+    --ink-soft:#b6adda; --green:#34d399; --red:#fb7185;
     --border-rgb: 250,247,255;
     --shadow: 0 8px 30px rgba(0,0,0,0.45);
   }
@@ -41,13 +42,15 @@
   header.topbar{
     display:flex; align-items:center; justify-content:space-between; padding:18px 24px;
     background: linear-gradient(180deg, var(--bg-900), var(--bg-950));
-    border-bottom: 1px solid rgba(255,201,77,0.25);
+    border-bottom: 3px solid transparent;
+    border-image: linear-gradient(90deg, var(--sun), var(--coral), var(--violet), var(--mint)) 1;
   }
   .wordmark{ display:flex; align-items:center; gap:12px; }
   .seal{
-    width:36px; height:36px; border-radius:50%; border:2px solid var(--sun);
+    width:36px; height:36px; border-radius:50%;
+    background: var(--gradiente-alegre);
     display:flex; align-items:center; justify-content:center;
-    font-family:'Baloo 2',sans-serif; font-weight:700; color:var(--sun); font-size:14px;
+    font-family:'Baloo 2',sans-serif; font-weight:700; color:#fff; font-size:14px;
   }
   .wordmark h1{ font-size:18px; margin:0; }
   .wordmark small{ display:block; color:var(--ink-soft); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; }
@@ -56,8 +59,8 @@
     font-family:'Nunito',sans-serif; font-size:14px; font-weight:600;
     border:none; border-radius:7px; padding:10px 16px; cursor:pointer;
   }
-  .btn-gold{ background: var(--sun); color: var(--btn-ink); width:100%; }
-  .btn-gold:hover{ background: var(--sun-2); }
+  .btn-gold{ background: var(--gradiente-alegre); color: #fff; width:100%; box-shadow: 0 3px 10px rgba(255,92,122,0.3); }
+  .btn-gold:hover{ box-shadow: 0 5px 14px rgba(255,92,122,0.45); }
   .btn-ghost{ background: transparent; color: var(--paper); border:1px solid rgba(var(--border-rgb),0.25); padding:7px 12px; font-size:12.5px; }
   .btn-ghost:hover{ border-color: var(--sun); color: var(--sun-2); }
 
@@ -82,16 +85,19 @@
   main.conteudo{ flex:1; padding:24px 20px; max-width:640px; margin:0 auto; width:100%; }
 
   .cartao-saldo{
-    background: linear-gradient(135deg, var(--bg-900), var(--bg-800));
-    border:1px solid rgba(255,201,77,0.3); border-radius: var(--radius);
+    background: linear-gradient(135deg, var(--sun), var(--coral) 55%, var(--violet));
+    border:none; border-radius: var(--radius);
     padding:24px; margin-bottom:20px; text-align:center;
+    box-shadow: 0 8px 20px rgba(255,92,122,0.3);
   }
-  .cartao-saldo .rotulo{ font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:var(--ink-soft); }
-  .cartao-saldo .valor{ font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:600; color:var(--sun-2); margin:6px 0; }
-  .cartao-saldo .taxa{ font-size:13px; color:var(--paper); }
+  .cartao-saldo .rotulo{ font-size:12px; text-transform:uppercase; letter-spacing:0.08em; color:rgba(255,255,255,0.85); }
+  .cartao-saldo .valor{ font-family:'IBM Plex Mono',monospace; font-size:36px; font-weight:600; color:#fff; margin:6px 0; text-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+  .cartao-saldo .taxa{ font-size:13px; color:#fff; }
 
   .cartao{
-    background: var(--bg-900); border:1px solid rgba(255,201,77,0.18); border-radius: var(--radius);
+    background: var(--bg-900); border:1px solid rgba(255,201,77,0.18);
+    border-top: 4px solid var(--mint);
+    border-radius: var(--radius);
     padding:18px 20px; margin-bottom:18px;
   }
   .cartao h3{ font-family:'Baloo 2',sans-serif; font-size:15px; margin:0 0 12px; color: var(--sun-2); }
@@ -381,11 +387,11 @@ function renderDados(data){
 
   $('info-aluno').textContent = `${data.aluno.nome} · ${data.turma}${data.aluno.numero ? ' · Nº ' + data.aluno.numero : ''}`;
   $('valor-saldo').textContent = fmt(data.saldo);
-  $('valor-taxa').textContent = `📈 Juros pedagógico atual: ${Number(data.taxa_diaria_total).toFixed(2)}%/dia`;
+  $('valor-taxa').textContent = `📈 Juros pedagógico atual: ${Number(data.taxa_mensal_total).toFixed(2)}%/mês (${Number(data.taxa_diaria_total).toFixed(3)}%/dia)`;
 
   const pacotesEl = $('lista-pacotes');
   pacotesEl.innerHTML = data.pacotes_ativos.length
-    ? data.pacotes_ativos.map(p => `<span class="tag-pacote">${p.nome} (+${p.taxa_diaria}%/dia${p.data_fim ? ', até ' + new Date(p.data_fim).toLocaleDateString('pt-BR') : ''})</span>`).join('')
+    ? data.pacotes_ativos.map(p => `<span class="tag-pacote">${p.nome} (+${p.taxa_mensal}%/mês${p.data_fim ? ', até ' + new Date(p.data_fim).toLocaleDateString('pt-BR') : ''})</span>`).join('')
     : '<p style="color:var(--ink-soft); font-size:13.5px;">Nenhum pacote ativo no momento.</p>';
 
   const extratoEl = $('lista-extrato');
