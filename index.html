@@ -195,7 +195,7 @@
       <div class="taxa" id="valor-taxa"></div>
     </div>
 
-    <div style="background:rgba(13,148,136,0.08); border:1px solid rgba(13,148,136,0.25); border-radius:12px; padding:10px 14px; margin-bottom:18px; font-size:12.5px;">
+    <div style="background:rgba(13,148,136,0.08); border:1px solid rgba(13,148,136,0.25); border-radius:12px; padding:12px 14px; margin-bottom:18px; font-size:12.5px; line-height:1.5;" id="cartao-dica-dia">
       🌟 Cada bom hábito conta! Continue economizando e cuidando do seu WL — é assim que ele cresce com juros.
     </div>
 
@@ -261,16 +261,43 @@ const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
 // ---------------------------------------------------------------- QR CODE (gerar / ler)
 function gerarQRCode(canvasEl, texto){
+  if (typeof QRCode === 'undefined') {
+    canvasEl.replaceWith(Object.assign(document.createElement('p'), {
+      textContent: 'Não foi possível carregar o gerador de QR Code. Verifique sua internet e recarregue a página.',
+      style: 'color:var(--red); font-size:13px;'
+    }));
+    return;
+  }
   QRCode.toCanvas(canvasEl, texto, { width: 200, margin: 1 }, (err) => { if (err) console.error(err); });
 }
 
+// OBS: leitura em baixa resolução e com intervalo entre tentativas de
+// propósito — ler em resolução nativa a cada frame trava o navegador em
+// celulares e Chromebooks mais simples.
+let _qrScanAtivo = null;
+
 function escanearQRCode(containerEl){
+  if (_qrScanAtivo) { _qrScanAtivo(); _qrScanAtivo = null; }
   return new Promise((resolve) => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      containerEl.innerHTML = '<p style="color:var(--red); font-size:13px;">Este navegador não permite acesso à câmera. Digite o código manualmente.</p>';
+      resolve(null);
+      return;
+    }
+    if (typeof jsQR === 'undefined') {
+      containerEl.innerHTML = '<p style="color:var(--red); font-size:13px;">Não foi possível carregar o leitor de QR Code. Verifique sua internet e recarregue a página.</p>';
+      resolve(null);
+      return;
+    }
+
+    const LARGURA_DECODE = 360;
     const video = document.createElement('video');
     video.setAttribute('playsinline', true);
+    video.muted = true;
     video.style.width = '100%';
     video.style.borderRadius = '10px';
     const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const btnCancelar = document.createElement('button');
     btnCancelar.textContent = 'Cancelar leitura';
     btnCancelar.className = 'btn-ghost';
@@ -281,36 +308,44 @@ function escanearQRCode(containerEl){
     containerEl.appendChild(video);
     containerEl.appendChild(btnCancelar);
 
-    let stream, animId, encerrado = false;
+    let stream, timeoutId, encerrado = false;
 
     function encerrar(resultado){
       if (encerrado) return;
       encerrado = true;
-      if (animId) cancelAnimationFrame(animId);
+      if (timeoutId) clearTimeout(timeoutId);
       if (stream) stream.getTracks().forEach(t => t.stop());
       containerEl.innerHTML = '';
+      if (_qrScanAtivo === pararEsteEscaneamento) _qrScanAtivo = null;
       resolve(resultado);
     }
+    function pararEsteEscaneamento(){ encerrar(null); }
+    _qrScanAtivo = pararEsteEscaneamento;
 
     btnCancelar.addEventListener('click', () => encerrar(null));
 
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 480 }, height: { ideal: 360 } }
+    })
       .then((s) => {
         stream = s;
         video.srcObject = s;
         video.play();
-        const ctx = canvas.getContext('2d');
+
         function tick(){
           if (encerrado) return;
-          if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imagem = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const codigo = jsQR(imagem.data, imagem.width, imagem.height);
-            if (codigo) { encerrar(codigo.data); return; }
+          if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth) {
+            try {
+              const escala = LARGURA_DECODE / video.videoWidth;
+              canvas.width = LARGURA_DECODE;
+              canvas.height = Math.max(1, Math.round(video.videoHeight * escala));
+              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+              const imagem = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const codigo = jsQR(imagem.data, imagem.width, imagem.height, { inversionAttempts: 'dontInvert' });
+              if (codigo) { encerrar(codigo.data); return; }
+            } catch (erroDecode) { /* frame ainda não pronto */ }
           }
-          animId = requestAnimationFrame(tick);
+          timeoutId = setTimeout(tick, 200);
         }
         tick();
       })
@@ -347,6 +382,37 @@ function escanearQRCode(containerEl){
 })();
 const $ = (id) => document.getElementById(id);
 const fmt = (n) => 'WL ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+// ---------------------------------------------------------------- DICA DO DIA
+const dicasEducativas = [
+  '📚 Matemática na prática: juro é a "porcentagem que rende sozinha". Se você tem WL 100 e o plano rende 6% ao mês, em 30 dias viram WL 106 — sem fazer nada além de deixar guardado.',
+  '🧮 Juros compostos são "juros sobre juros": o rendimento de hoje também rende amanhã. É por isso que quanto mais cedo você guarda, mais seu dinheiro cresce com o tempo.',
+  '🗓️ Frequência conta muito além da chamada: faltar aula é perder aprendizado — e, aqui no WL Bank, também pode significar perder a chance de ganhar planos de bônus que exigem presença.',
+  '📝 Notas boas abrem portas — literalmente: professores podem criar planos de juros extras para quem se destaca nas avaliações. Estudar também "rende" no WL Bank.',
+  '⚠️ Taxas não existem pra "tirar" seu dinheiro — existem pra mostrar, na prática, que atitudes têm consequências reais. É a mesma lógica de multas de trânsito ou juros de cartão atrasado, só que em escala de sala de aula.',
+  '💡 Uma dica de educação financeira de verdade: separar uma parte do que você ganha ANTES de gastar (não o que sobra depois) é o segredo de quem consegue guardar dinheiro a vida toda.',
+  '📈 Quanto mais alto o seu saldo, maior o valor em WL que os juros rendem — mesmo com a mesma porcentagem. Por isso poupar cedo faz tanta diferença no longo prazo.',
+  '🎯 Cada decisão financeira é uma escolha entre "agora" e "depois". Gastar tudo é escolher o agora; guardar é apostar no seu eu do futuro.',
+  '🏫 Faltas e atrasos não afetam só a nota — afetam hábitos. Quem constrói disciplina na escola carrega isso pra vida financeira também.',
+  '💰 No mundo real, bancos pagam juros pra quem guarda dinheiro com eles, porque usam esse dinheiro pra emprestar a outras pessoas. Aqui no WL Bank, o "banco" é a sua própria escola — e quem ganha é você.',
+  '🔢 Se um plano rende 3% ao mês, isso equivale a apenas 0,1% ao dia — pequeno todo dia, mas que soma bastante em um bimestre inteiro. É assim que o rendimento diário funciona por trás do WL Bank.',
+  '🌟 Bônus por participação, boas atitudes ou desempenho são uma forma de "juro extra" — assim como no mundo real algumas contas rendem mais quando você atinge certas metas.',
+  '📉 Assim como no mundo real, decisões ruins (indisciplina, desorganização) podem custar caro. A diferença é que aqui no WL Bank o "custo" é só simbólico — e serve pra aprender sem risco de verdade.',
+  '🧠 Educação financeira não é sobre ter muito dinheiro — é sobre tomar boas decisões com o dinheiro que você tem, seja WL ou reais de verdade.',
+  '📊 Quer ver seus juros crescerem mais rápido? Fale com seu professor sobre quais atitudes (frequência, notas, comportamento) podem te dar acesso a planos de bônus.',
+  '🎓 Frequência, notas e comportamento não são só sobre o boletim — no WL Bank, eles também podem virar juros extras. Seu esforço na escola pode literalmente "render".',
+  '💸 PIX, débito, crédito... os nomes que você usa aqui no WL Bank são os mesmos do sistema bancário real. Aprender a usá-los agora facilita muito a vida financeira lá na frente.',
+  '🔑 Guardar dinheiro (ou WL) não é sobre ficar rico rápido — é sobre construir o hábito de esperar e planejar. Esse hábito vale muito mais que qualquer valor guardado.',
+];
+
+function mostrarDicaDoDia(){
+  const el = document.getElementById('cartao-dica-dia');
+  if (!el) return;
+  const inicioAno = new Date(new Date().getFullYear(), 0, 0);
+  const diaDoAno = Math.floor((Date.now() - inicioAno) / 86400000);
+  el.textContent = dicasEducativas[diaDoAno % dicasEducativas.length];
+}
+mostrarDicaDoDia();
 
 const rotulosTipo = {
   deposito:'Depósito', saque:'Saque',

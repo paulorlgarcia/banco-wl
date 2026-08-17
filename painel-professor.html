@@ -190,6 +190,11 @@
   table.ledger tr:hover td{ background: rgba(255,201,77,0.04); }
   .saldo{ font-weight:600; }
   .acoes-linha{ display:flex; gap:6px; flex-wrap:wrap; }
+  .btn-aba-loja{
+    background: transparent; color: var(--ink-soft); border:1px solid rgba(var(--border-rgb),0.2);
+    font-family:'Baloo 2',sans-serif; font-weight:600; padding:9px 18px; border-radius:10px;
+  }
+  .btn-aba-loja.aba-loja-ativa{ background: var(--gradiente-alegre); color:#fff; border-color:transparent; }
 
   .cartao{
     background: var(--bg-900); border:1px solid rgba(255,201,77,0.18);
@@ -336,7 +341,7 @@
     </aside>
 
     <main class="conteudo">
-      <div style="background:rgba(13,148,136,0.08); border:1px solid rgba(13,148,136,0.25); border-radius:12px; padding:10px 14px; margin-bottom:18px; font-size:12.5px; color:var(--paper);">
+      <div style="background:rgba(13,148,136,0.08); border:1px solid rgba(13,148,136,0.25); border-radius:12px; padding:10px 14px; margin-bottom:18px; font-size:12.5px; color:var(--paper); line-height:1.5;" id="cartao-dica-dia-professor">
         🎓 <strong>Educação financeira na prática:</strong> use depósitos, juros e taxas para reconhecer bons hábitos e criar
         consequências simbólicas — o objetivo é motivar, não punir de verdade.
       </div>
@@ -347,21 +352,7 @@
       </div>
 
       <div class="cartao">
-        <div class="linha-form">
-          <div class="field" style="max-width:110px;">
-            <label>Número</label>
-            <input type="number" min="1" id="numero-novo-aluno" placeholder="Nº">
-          </div>
-          <div class="field" style="max-width:150px;">
-            <label>RA</label>
-            <input type="text" id="ra-novo-aluno" placeholder="Registro do aluno">
-          </div>
-          <div class="field">
-            <label>Nome do aluno</label>
-            <input type="text" id="nome-novo-aluno" placeholder="Nome completo">
-          </div>
-          <button id="btn-add-aluno" class="btn-ghost btn-small">+ Adicionar aluno</button>
-        </div>
+        <button id="btn-novo-aluno" class="btn-gold btn-small">👤 + Novo aluno</button>
       </div>
 
       <table class="ledger" id="tabela-alunos">
@@ -536,75 +527,84 @@
       o WL que ganharam, e retiram o produto na escola depois da confirmação.
     </div>
 
-    <div class="cartao">
-      <h3>Status da loja</h3>
-      <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:14px; margin-bottom:14px;">
-        <input type="checkbox" id="loja-ativa-checkbox" style="width:auto;">
-        Loja aberta para os alunos comprarem (visível no <code>index.html</code>)
-      </label>
-      <button id="btn-salvar-loja-ativa" class="btn-gold btn-small">Salvar</button>
+    <div class="acoes-linha" style="margin-bottom:18px; gap:8px;">
+      <button class="btn-aba-loja aba-loja-ativa" data-aba-loja="config">⚙️ Configuração</button>
+      <button class="btn-aba-loja" data-aba-loja="caixa">🧾 Frente de Caixa</button>
     </div>
 
-    <div class="cartao">
-      <h3>Produtos</h3>
-      <table class="ledger" style="margin-bottom:20px;">
-        <thead><tr><th>Nome</th><th>Preço</th><th>Estoque</th><th style="text-align:right;">Ações</th></tr></thead>
-        <tbody id="corpo-produtos"></tbody>
-      </table>
-
-      <h3 style="font-size:14px;">✨ Novo produto</h3>
-      <div class="grid-2">
-        <div class="field"><label>Nome</label><input type="text" id="novo-produto-nome" placeholder="Ex: Caneta colorida"></div>
-        <div class="field"><label>Preço (WL)</label><input type="number" step="0.01" min="0.01" id="novo-produto-preco" class="mono"></div>
+    <div id="loja-aba-config">
+      <div class="cartao">
+        <h3>Status da loja</h3>
+        <label style="display:flex; align-items:center; gap:8px; text-transform:none; letter-spacing:0; font-size:14px; margin-bottom:14px;">
+          <input type="checkbox" id="loja-ativa-checkbox" style="width:auto;">
+          Loja aberta para os alunos comprarem (visível no <code>index.html</code>)
+        </label>
+        <button id="btn-salvar-loja-ativa" class="btn-gold btn-small">Salvar</button>
       </div>
-      <div class="grid-2">
-        <div class="field"><label>Estoque (deixe em branco para ilimitado)</label><input type="number" min="0" id="novo-produto-estoque"></div>
-        <div class="field"><label>Descrição (opcional)</label><input type="text" id="novo-produto-descricao"></div>
+
+      <div class="cartao">
+        <h3>Produtos</h3>
+        <table class="ledger" style="margin-bottom:20px;">
+          <thead><tr><th>Nome</th><th>Preço</th><th>Estoque</th><th style="text-align:right;">Ações</th></tr></thead>
+          <tbody id="corpo-produtos"></tbody>
+        </table>
+
+        <h3 style="font-size:14px;">✨ Novo produto</h3>
+        <div class="grid-2">
+          <div class="field"><label>Nome</label><input type="text" id="novo-produto-nome" placeholder="Ex: Caneta colorida"></div>
+          <div class="field"><label>Preço (WL)</label><input type="number" step="0.01" min="0.01" id="novo-produto-preco" class="mono"></div>
+        </div>
+        <div class="grid-2">
+          <div class="field"><label>Estoque (deixe em branco para ilimitado)</label><input type="number" min="0" id="novo-produto-estoque"></div>
+          <div class="field"><label>Descrição (opcional)</label><input type="text" id="novo-produto-descricao"></div>
+        </div>
+        <button id="btn-criar-produto" class="btn-ghost btn-small">+ Criar produto</button>
       </div>
-      <button id="btn-criar-produto" class="btn-ghost btn-small">+ Criar produto</button>
+
+      <div class="cartao">
+        <h3>Pedidos da lojinha (retirada na escola)</h3>
+        <div id="lista-pedidos-loja">Carregando...</div>
+      </div>
     </div>
 
-    <div class="cartao">
-      <h3>Pedidos da lojinha (retirada na escola)</h3>
-      <div id="lista-pedidos-loja">Carregando...</div>
-    </div>
-
-    <div class="cartao">
-      <h3>🧾 Frente de caixa (venda presencial)</h3>
-      <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
-        Venda direto na escola, debitando na hora do saldo do aluno. Pode ser usada por professores
-        ou por um perfil de vendedor (veja o guia de instalação para criar esse acesso restrito).
-      </p>
-      <div class="grid-2">
-        <div class="field">
-          <label>Turma do aluno</label>
-          <select id="caixa-turma-select"></select>
+    <div id="loja-aba-caixa" class="hidden">
+      <div class="cartao">
+        <h3>🧾 Frente de caixa (venda presencial)</h3>
+        <p style="font-size:12.5px; color:var(--ink-soft); margin:-4px 0 14px;">
+          Venda direto na escola, debitando na hora do saldo do aluno. Pode ser usada por professores
+          ou por um perfil de vendedor (veja o guia de instalação para criar esse acesso restrito).
+        </p>
+        <div class="grid-2">
+          <div class="field">
+            <label>Turma do aluno</label>
+            <select id="caixa-turma-select"></select>
+          </div>
+          <div class="field">
+            <label>Aluno</label>
+            <select id="caixa-aluno-select"></select>
+          </div>
         </div>
         <div class="field">
-          <label>Aluno</label>
-          <select id="caixa-aluno-select"></select>
+          <label>Adicionar produto</label>
+          <select id="caixa-produto-select"></select>
         </div>
+        <div class="linha-form" style="margin-bottom:14px;">
+          <div class="field" style="max-width:120px;"><label>Quantidade</label><input type="number" min="1" value="1" id="caixa-quantidade"></div>
+          <button id="btn-caixa-adicionar" class="btn-ghost btn-small">+ Adicionar ao carrinho</button>
+        </div>
+        <div id="caixa-carrinho" style="margin-bottom:14px;"></div>
+        <div style="font-weight:700; margin-bottom:14px;">Total: <span class="mono" id="caixa-total">WL 0,00</span></div>
+        <div class="acoes-linha">
+          <button id="btn-caixa-finalizar" class="btn-gold btn-small">✅ Finalizar venda direto</button>
+          <button id="btn-caixa-qrcode" class="btn-ghost btn-small">📱 Cobrar com QR Code</button>
+        </div>
+        <div class="erro-modal" id="caixa-erro"></div>
       </div>
-      <div class="field">
-        <label>Adicionar produto</label>
-        <select id="caixa-produto-select"></select>
-      </div>
-      <div class="linha-form" style="margin-bottom:14px;">
-        <div class="field" style="max-width:120px;"><label>Quantidade</label><input type="number" min="1" value="1" id="caixa-quantidade"></div>
-        <button id="btn-caixa-adicionar" class="btn-ghost btn-small">+ Adicionar ao carrinho</button>
-      </div>
-      <div id="caixa-carrinho" style="margin-bottom:14px;"></div>
-      <div style="font-weight:700; margin-bottom:14px;">Total: <span class="mono" id="caixa-total">WL 0,00</span></div>
-      <div class="acoes-linha">
-        <button id="btn-caixa-finalizar" class="btn-gold btn-small">✅ Finalizar venda direto</button>
-        <button id="btn-caixa-qrcode" class="btn-ghost btn-small">📱 Cobrar com QR Code</button>
-      </div>
-      <div class="erro-modal" id="caixa-erro"></div>
     </div>
   </div>
 
   <!-- TELA DE RELATÓRIOS -->
-  <div id="tela-relatorios" class="hidden" style="flex:1; padding:26px 32px; overflow-y:auto;">
+  <div id="tela-relatorios" class="hidden" style="flex:1; padding:26px 32px; overflow-y:auto; background-image: radial-gradient(rgba(var(--border-rgb),0.18) 1px, transparent 1px); background-size: 22px 22px;">
     <div class="barra-titulo">
       <h2 class="brand">📊 Relatórios</h2>
       <button class="btn-ghost btn-small" id="btn-voltar-relatorios">← Voltar ao painel</button>
@@ -637,7 +637,24 @@
       <button id="btn-exportar-csv" class="btn-ghost btn-small hidden" style="margin-left:8px;">⬇️ Exportar CSV</button>
     </div>
 
-    <div id="rel-resumo" class="grid-2" style="margin-bottom:20px;"></div>
+    <div id="rel-resumo" class="grid-2" style="margin-bottom:20px; gap:14px;"></div>
+
+    <div class="grid-2" style="align-items:stretch;">
+      <div class="cartao" style="border-top-color:var(--violet);">
+        <h3>🥧 Distribuição por tipo</h3>
+        <div style="position:relative; height:240px;"><canvas id="grafico-pizza"></canvas></div>
+        <div id="pizza-legenda" style="display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; font-size:12px;"></div>
+      </div>
+      <div class="cartao" style="border-top-color:var(--pink);">
+        <h3>📈 Movimentação no período</h3>
+        <div style="position:relative; height:240px;"><canvas id="grafico-linha"></canvas></div>
+      </div>
+    </div>
+
+    <div class="cartao" style="border-top-color:var(--sun);">
+      <h3>🏫 Por turma</h3>
+      <div id="rel-por-turma">—</div>
+    </div>
 
     <div class="cartao">
       <h3>Movimentações</h3>
@@ -651,6 +668,8 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
@@ -661,18 +680,45 @@ const supabase = createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
 
 // ---------------------------------------------------------------- QR CODE (gerar / ler)
 function gerarQRCode(canvasEl, texto){
+  if (typeof QRCode === 'undefined') {
+    canvasEl.replaceWith(Object.assign(document.createElement('p'), {
+      textContent: 'Não foi possível carregar o gerador de QR Code. Verifique sua internet e recarregue a página.',
+      style: 'color:var(--red); font-size:13px;'
+    }));
+    return;
+  }
   QRCode.toCanvas(canvasEl, texto, { width: 220, margin: 1 }, (err) => { if (err) console.error(err); });
 }
 
 // Abre a câmera dentro de containerEl, tenta ler um QR Code.
 // Resolve com o texto lido, ou null se cancelado / sem câmera.
+// OBS: a leitura roda em baixa resolução e com intervalo entre tentativas
+// de propósito — ler em resolução nativa a cada frame trava o navegador
+// em celulares e Chromebooks mais simples.
+let _qrScanAtivo = null; // encerra qualquer leitura de QR em andamento, evita câmeras acumuladas
+
 function escanearQRCode(containerEl){
+  if (_qrScanAtivo) { _qrScanAtivo(); _qrScanAtivo = null; }
   return new Promise((resolve) => {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      containerEl.innerHTML = '<p style="color:var(--red); font-size:13px;">Este navegador não permite acesso à câmera. Digite o código manualmente.</p>';
+      resolve(null);
+      return;
+    }
+    if (typeof jsQR === 'undefined') {
+      containerEl.innerHTML = '<p style="color:var(--red); font-size:13px;">Não foi possível carregar o leitor de QR Code. Verifique sua internet e recarregue a página.</p>';
+      resolve(null);
+      return;
+    }
+
+    const LARGURA_DECODE = 360; // baixa resolução de propósito — decodificar rápido, sem travar
     const video = document.createElement('video');
     video.setAttribute('playsinline', true);
+    video.muted = true;
     video.style.width = '100%';
     video.style.borderRadius = '10px';
     const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
     const btnCancelar = document.createElement('button');
     btnCancelar.textContent = 'Cancelar leitura';
     btnCancelar.className = 'btn-ghost btn-small';
@@ -682,36 +728,44 @@ function escanearQRCode(containerEl){
     containerEl.appendChild(video);
     containerEl.appendChild(btnCancelar);
 
-    let stream, animId, encerrado = false;
+    let stream, timeoutId, encerrado = false;
 
     function encerrar(resultado){
       if (encerrado) return;
       encerrado = true;
-      if (animId) cancelAnimationFrame(animId);
+      if (timeoutId) clearTimeout(timeoutId);
       if (stream) stream.getTracks().forEach(t => t.stop());
       containerEl.innerHTML = '';
+      if (_qrScanAtivo === pararEsteEscaneamento) _qrScanAtivo = null;
       resolve(resultado);
     }
+    function pararEsteEscaneamento(){ encerrar(null); }
+    _qrScanAtivo = pararEsteEscaneamento;
 
     btnCancelar.addEventListener('click', () => encerrar(null));
 
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment', width: { ideal: 480 }, height: { ideal: 360 } }
+    })
       .then((s) => {
         stream = s;
         video.srcObject = s;
         video.play();
-        const ctx = canvas.getContext('2d');
+
         function tick(){
           if (encerrado) return;
-          if (video.readyState === video.HAVE_ENOUGH_DATA) {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            const imagem = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            const codigo = jsQR(imagem.data, imagem.width, imagem.height);
-            if (codigo) { encerrar(codigo.data); return; }
+          if (video.readyState === video.HAVE_ENOUGH_DATA && video.videoWidth) {
+            try {
+              const escala = LARGURA_DECODE / video.videoWidth;
+              canvas.width = LARGURA_DECODE;
+              canvas.height = Math.max(1, Math.round(video.videoHeight * escala));
+              ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+              const imagem = ctx.getImageData(0, 0, canvas.width, canvas.height);
+              const codigo = jsQR(imagem.data, imagem.width, imagem.height, { inversionAttempts: 'dontInvert' });
+              if (codigo) { encerrar(codigo.data); return; }
+            } catch (erroDecode) { /* frame ainda não pronto — tenta de novo no próximo ciclo */ }
           }
-          animId = requestAnimationFrame(tick);
+          timeoutId = setTimeout(tick, 200); // ~5 tentativas por segundo é suficiente e não trava o navegador
         }
         tick();
       })
@@ -733,6 +787,11 @@ function escanearQRCode(containerEl){
     const sistemaEscuro = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const escuro = preferencia === 'escuro' || (preferencia === 'sistema' && sistemaEscuro);
     document.documentElement.setAttribute('data-theme', escuro ? 'dark' : 'light');
+    // se a tela de relatórios estiver aberta, redesenha os gráficos com as cores do novo tema
+    const telaRel = document.getElementById('tela-relatorios');
+    if (telaRel && !telaRel.classList.contains('hidden') && typeof gerarRelatorio === 'function') {
+      setTimeout(() => gerarRelatorio(), 50);
+    }
   }
 
   aplicarTema(salvo);
@@ -748,6 +807,29 @@ function escanearQRCode(containerEl){
 })();
 
 const fmt = (n) => 'WL ' + Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+// ---------------------------------------------------------------- DICA DO DIA (professor)
+const dicasProfessor = [
+  '🎓 <strong>Educação financeira na prática:</strong> use depósitos, juros e taxas para reconhecer bons hábitos e criar consequências simbólicas — o objetivo é motivar, não punir de verdade.',
+  '🧮 <strong>Matemática visível:</strong> peça para os alunos calcularem, com uma calculadora ou na mão, quanto renderiam WL 100 em 3 meses com a taxa mensal do Plano Básico. É juros compostos na prática.',
+  '🗓️ <strong>Frequência vira plano de bônus:</strong> considere criar um plano personalizado de juros extras para turmas ou alunos com boa frequência no bimestre — reforça que presença tem valor real.',
+  '📝 <strong>Notas e desempenho:</strong> um bônus (Configurações > Taxas e Consequências) aplicado após uma avaliação é uma forma concreta de conectar esforço escolar a resultado financeiro.',
+  '⚠️ <strong>Taxas com propósito:</strong> ao aplicar uma taxa por indisciplina, aproveite o momento para explicar o motivo — o aprendizado vem da reflexão, não só da consequência.',
+  '💬 <strong>Transparência gera confiança:</strong> o extrato do aluno já mostra o motivo de cada taxa e o pacote de origem de cada juro — use isso para conversar sobre as decisões financeiras deles.',
+  '📈 <strong>Poupança visível:</strong> alunos que veem o próprio saldo crescendo sozinho (via juros automáticos) entendem "na pele" por que vale a pena guardar em vez de gastar tudo.',
+  '🏅 <strong>Planos personalizados são reconhecimento:</strong> um plano de bônus por tempo limitado é uma ótima forma de premiar uma conquista específica (prova, projeto, comportamento) sem mexer na taxa de todo mundo.',
+  '🔁 <strong>Consistência pedagógica:</strong> critérios claros e repetidos (ex: "toda falta gera esta taxa") ensinam causa e consequência melhor do que decisões pontuais e imprevisíveis.',
+  '🧠 <strong>Converse sobre os porquês:</strong> vale mais explicar por que uma taxa foi aplicada do que só aplicá-la — o objetivo é o aluno entender a lógica, não decorar uma regra.',
+];
+
+function mostrarDicaDoDiaProfessor(){
+  const el = document.getElementById('cartao-dica-dia-professor');
+  if (!el) return;
+  const inicioAno = new Date(new Date().getFullYear(), 0, 0);
+  const diaDoAno = Math.floor((Date.now() - inicioAno) / 86400000);
+  el.innerHTML = dicasProfessor[diaDoAno % dicasProfessor.length];
+}
+mostrarDicaDoDiaProfessor();
 const $ = (id) => document.getElementById(id);
 
 let turmaAtualId = null;
@@ -886,7 +968,7 @@ async function carregarAlunos(){
   if (!turmaAtualId) return;
   const { data, error } = await supabase
     .from('alunos')
-    .select('id, nome, numero, ra, contas(id, saldo)')
+    .select('id, nome, numero, ra, ra_digito, data_nascimento, email_microsoft, email_google, situacao, turma_id, contas(id, saldo)')
     .eq('turma_id', turmaAtualId)
     .order('numero', { ascending: true, nullsFirst: false })
     .order('nome');
@@ -934,7 +1016,7 @@ function renderAlunos(){
     const tr = document.createElement('tr');
     tr.innerHTML = `
       <td class="mono">${aluno.numero ?? '—'}</td>
-      <td>${aluno.nome}</td>
+      <td>${aluno.nome}${aluno.situacao && aluno.situacao !== 'ativo' ? `<div>${rotulosSituacao[aluno.situacao] || aluno.situacao}</div>` : ''}</td>
       <td class="mono">${aluno.ra ?? '—'}</td>
       <td class="mono saldo">${fmt(saldo)}</td>
       <td>
@@ -973,45 +1055,107 @@ function renderAlunos(){
   $('resumo-turma').innerHTML = `${alunosCache.length} aluno(s) · saldo total <span class="mono">${fmt(total)}</span>`;
 }
 
-$('btn-add-aluno').addEventListener('click', async () => {
-  const nome = $('nome-novo-aluno').value.trim();
-  const numeroTexto = $('numero-novo-aluno').value.trim();
-  const numero = numeroTexto === '' ? null : parseInt(numeroTexto, 10);
-  const ra = $('ra-novo-aluno').value.trim() || null;
-  if (!nome || !turmaAtualId) return;
-  const { error } = await supabase.from('alunos').insert({ nome, numero, ra, turma_id: turmaAtualId });
-  if (error) {
-    toast(error.code === '23505' ? 'Erro: esse número ou RA já está em uso.' : 'Erro: ' + error.message, true);
-    return;
+$('btn-novo-aluno').addEventListener('click', () => abrirModalAluno(null));
+
+const rotulosSituacao = {
+  ativo: '🟢 Ativo',
+  transferido: '🔵 Transferido',
+  remanejamento: '🟡 Remanejamento',
+  nao_comparecimento: '🔴 Não comparecimento'
+};
+
+function editarAluno(aluno){ abrirModalAluno(aluno); }
+
+function abrirModalAluno(alunoExistente){
+  const editando = !!alunoExistente;
+  const overlay = document.createElement('div');
+  overlay.className = 'overlay';
+  overlay.innerHTML = `
+    <div class="modal" style="max-width:520px;">
+      <header>
+        <h3>${editando ? '✏️ Editar aluno' : '👤 Novo aluno'}</h3>
+        <button class="fechar-x" id="aluno-fechar">✕</button>
+      </header>
+      <div class="grid-2">
+        <div class="field">
+          <label>Turma</label>
+          <select id="aluno-turma">${turmasCache.map(t => `<option value="${t.id}">${t.nome}</option>`).join('')}</select>
+        </div>
+        <div class="field"><label>Nº de chamada</label><input type="number" min="1" id="aluno-numero"></div>
+      </div>
+      <div class="field"><label>Nome do aluno</label><input type="text" id="aluno-nome" placeholder="Nome completo"></div>
+      <div class="grid-2">
+        <div class="field"><label>RA</label><input type="text" id="aluno-ra" placeholder="Registro do aluno"></div>
+        <div class="field"><label>Dígito do RA</label><input type="text" id="aluno-ra-digito" maxlength="2" placeholder="Ex: 8"></div>
+      </div>
+      <div class="field"><label>Data de nascimento</label><input type="date" id="aluno-nascimento"></div>
+      <div class="grid-2">
+        <div class="field"><label>E-mail Microsoft</label><input type="email" id="aluno-email-ms" placeholder="nome@escola.onmicrosoft.com"></div>
+        <div class="field"><label>E-mail Google</label><input type="email" id="aluno-email-google" placeholder="nome@escola.org"></div>
+      </div>
+      <div class="field">
+        <label>Situação do aluno</label>
+        <select id="aluno-situacao">
+          <option value="ativo">🟢 Ativo</option>
+          <option value="transferido">🔵 Transferido</option>
+          <option value="remanejamento">🟡 Remanejamento</option>
+          <option value="nao_comparecimento">🔴 Não comparecimento</option>
+        </select>
+      </div>
+      <button class="btn-gold" id="aluno-salvar" style="width:100%;">${editando ? 'Salvar alterações' : '+ Cadastrar aluno'}</button>
+      <div class="erro-modal" id="aluno-erro"></div>
+    </div>`;
+  document.body.appendChild(overlay);
+  $('aluno-fechar').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+  $('aluno-turma').value = editando ? alunoExistente.turma_id : turmaAtualId;
+  if (editando) {
+    $('aluno-numero').value = alunoExistente.numero ?? '';
+    $('aluno-nome').value = alunoExistente.nome ?? '';
+    $('aluno-ra').value = alunoExistente.ra ?? '';
+    $('aluno-ra-digito').value = alunoExistente.ra_digito ?? '';
+    $('aluno-nascimento').value = alunoExistente.data_nascimento ?? '';
+    $('aluno-email-ms').value = alunoExistente.email_microsoft ?? '';
+    $('aluno-email-google').value = alunoExistente.email_google ?? '';
+    $('aluno-situacao').value = alunoExistente.situacao ?? 'ativo';
   }
-  $('nome-novo-aluno').value = '';
-  $('numero-novo-aluno').value = '';
-  $('ra-novo-aluno').value = '';
-  await carregarAlunos();
-  toast('Aluno cadastrado.');
-});
 
-async function editarAluno(aluno){
-  const novoNome = prompt('Nome do aluno:', aluno.nome);
-  if (novoNome === null) return;
-  const novoNumeroTexto = prompt('Número (deixe em branco para nenhum):', aluno.numero ?? '');
-  if (novoNumeroTexto === null) return;
-  const novoRa = prompt('RA (deixe em branco para nenhum):', aluno.ra ?? '');
-  if (novoRa === null) return;
+  $('aluno-salvar').addEventListener('click', async () => {
+    const erroEl = $('aluno-erro');
+    erroEl.textContent = '';
+    const nome = $('aluno-nome').value.trim();
+    const turmaId = $('aluno-turma').value;
+    if (!nome) { erroEl.textContent = 'Informe o nome do aluno.'; return; }
+    if (!turmaId) { erroEl.textContent = 'Selecione a turma.'; return; }
 
-  const atualizacao = {
-    nome: novoNome.trim() || aluno.nome,
-    numero: novoNumeroTexto.trim() === '' ? null : parseInt(novoNumeroTexto, 10),
-    ra: novoRa.trim() === '' ? null : novoRa.trim()
-  };
+    const numeroTexto = $('aluno-numero').value.trim();
+    const dados = {
+      nome,
+      turma_id: turmaId,
+      numero: numeroTexto === '' ? null : parseInt(numeroTexto, 10),
+      ra: $('aluno-ra').value.trim() || null,
+      ra_digito: $('aluno-ra-digito').value.trim() || null,
+      data_nascimento: $('aluno-nascimento').value || null,
+      email_microsoft: $('aluno-email-ms').value.trim() || null,
+      email_google: $('aluno-email-google').value.trim() || null,
+      situacao: $('aluno-situacao').value
+    };
 
-  const { error } = await supabase.from('alunos').update(atualizacao).eq('id', aluno.id);
-  if (error) {
-    toast(error.code === '23505' ? 'Erro: esse número ou RA já está em uso.' : 'Erro: ' + error.message, true);
-    return;
-  }
-  await carregarAlunos();
-  toast('Aluno atualizado.');
+    if (!confirm(editando ? `Confirma salvar as alterações de ${nome}?` : `Confirma cadastrar ${nome}?`)) return;
+
+    const resp = editando
+      ? await supabase.from('alunos').update(dados).eq('id', alunoExistente.id)
+      : await supabase.from('alunos').insert(dados);
+
+    if (resp.error) {
+      erroEl.textContent = resp.error.code === '23505' ? 'Esse número ou RA já está em uso.' : resp.error.message;
+      return;
+    }
+    overlay.remove();
+    await carregarAlunos();
+    toast(editando ? `✅ ${nome} atualizado.` : `✅ ${nome} cadastrado.`);
+  });
 }
 
 // ---------------------------------------------------------------- MODAIS
@@ -1657,14 +1801,19 @@ let linhasImportacao = [];
 
 $('btn-baixar-modelo').addEventListener('click', () => {
   const ws = XLSX.utils.aoa_to_sheet([
-    ['Turma', 'Número', 'RA', 'Nome'],
-    ['6ºA', 1, '2026001', 'Exemplo de Aluno'],
-    ['6ºA', 2, '2026002', 'Outro Aluno Exemplo']
+    ['Turma', 'Nº de chamada', 'Nome do Aluno', 'RA', 'Dígito do RA', 'Data de Nascimento', 'Email Microsoft', 'Email Google', 'Situação'],
+    ['6ºA', 1, 'Exemplo de Aluno', '2026001', '8', '2013-05-20', 'exemplo.aluno@escola.onmicrosoft.com', 'exemplo.aluno@escola.org', 'Ativo'],
+    ['6ºA', 2, 'Outro Aluno Exemplo', '2026002', '3', '2013-08-11', 'outro.aluno@escola.onmicrosoft.com', 'outro.aluno@escola.org', 'Ativo']
   ]);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Alunos');
   XLSX.writeFile(wb, 'modelo_importacao_wl_bank.xlsx');
 });
+
+const mapaSituacaoImportacao = {
+  'ativo': 'ativo', 'transferido': 'transferido', 'remanejamento': 'remanejamento',
+  'não comparecimento': 'nao_comparecimento', 'nao comparecimento': 'nao_comparecimento'
+};
 
 $('importar-arquivo').addEventListener('change', (e) => {
   const arquivo = e.target.files[0];
@@ -1676,19 +1825,27 @@ $('importar-arquivo').addEventListener('change', (e) => {
   const reader = new FileReader();
   reader.onload = (ev) => {
     try {
-      const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+      const wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array', cellDates: true });
       const primeiraAba = wb.Sheets[wb.SheetNames[0]];
-      const linhas = XLSX.utils.sheet_to_json(primeiraAba, { defval: '' });
+      const linhas = XLSX.utils.sheet_to_json(primeiraAba, { defval: '', raw: false, dateNF: 'yyyy-mm-dd' });
 
-      linhasImportacao = linhas.map(l => ({
-        turma: String(l['Turma'] ?? '').trim(),
-        numero: l['Número'] !== '' && l['Número'] != null ? parseInt(l['Número'], 10) : null,
-        ra: String(l['RA'] ?? '').trim() || null,
-        nome: String(l['Nome'] ?? '').trim()
-      })).filter(l => l.turma && l.nome);
+      linhasImportacao = linhas.map(l => {
+        const situacaoTexto = String(l['Situação'] ?? '').trim().toLowerCase();
+        return {
+          turma: String(l['Turma'] ?? '').trim(),
+          numero: l['Nº de chamada'] !== '' && l['Nº de chamada'] != null ? parseInt(l['Nº de chamada'], 10) : null,
+          nome: String(l['Nome do Aluno'] ?? '').trim(),
+          ra: String(l['RA'] ?? '').trim() || null,
+          ra_digito: String(l['Dígito do RA'] ?? '').trim() || null,
+          data_nascimento: String(l['Data de Nascimento'] ?? '').trim() || null,
+          email_microsoft: String(l['Email Microsoft'] ?? '').trim() || null,
+          email_google: String(l['Email Google'] ?? '').trim() || null,
+          situacao: mapaSituacaoImportacao[situacaoTexto] || 'ativo'
+        };
+      }).filter(l => l.turma && l.nome);
 
       if (!linhasImportacao.length) {
-        erroEl.textContent = 'Nenhuma linha válida encontrada. Confira se as colunas são Turma, Número, RA, Nome.';
+        erroEl.textContent = 'Nenhuma linha válida encontrada. Confira se as colunas batem com a planilha modelo.';
         return;
       }
 
@@ -1727,7 +1884,10 @@ $('btn-confirmar-importacao').addEventListener('click', async () => {
     const turmaId = idsTurma[linha.turma];
     if (!turmaId) { comErro++; continue; }
     const { error } = await supabase.from('alunos').insert({
-      nome: linha.nome, numero: linha.numero, ra: linha.ra, turma_id: turmaId
+      nome: linha.nome, numero: linha.numero, ra: linha.ra, turma_id: turmaId,
+      ra_digito: linha.ra_digito, data_nascimento: linha.data_nascimento,
+      email_microsoft: linha.email_microsoft, email_google: linha.email_google,
+      situacao: linha.situacao
     });
     if (error) comErro++; else criados++;
   }
@@ -1764,9 +1924,12 @@ const gruposTipo = {
 const rotulosRelatorio = {
   deposito:'Depósito', saque:'Saque', transferencia_enviada:'PIX enviado', transferencia_recebida:'PIX recebido',
   rendimento_automatico:'Juros automático', rendimento_manual:'Juros manual',
-  taxa_debito:'Taxa', taxa_bonus:'Bônus', estorno_credito:'Estorno (crédito)', estorno_debito:'Estorno (débito)'
+  taxa_debito:'Taxa', taxa_bonus:'Bônus', estorno_credito:'Estorno (crédito)', estorno_debito:'Estorno (débito)',
+  compra_loja:'Compra na loja', estorno_compra:'Estorno de compra', pix_qrcode:'PIX (QR Code)'
 };
 const negativosRelatorio = ['saque','transferencia_enviada','taxa_debito','estorno_debito'];
+
+function corVar(nome){ return getComputedStyle(document.documentElement).getPropertyValue('--' + nome).trim(); }
 
 $('btn-gerar-relatorio').addEventListener('click', gerarRelatorio);
 
@@ -1790,23 +1953,29 @@ async function gerarRelatorio(){
   ultimoRelatorio = data || [];
   renderResumoRelatorio(ultimoRelatorio);
   renderTabelaRelatorio(ultimoRelatorio);
+  renderGraficoPizza(ultimoRelatorio);
+  renderGraficoLinha(ultimoRelatorio);
+  renderPorTurma(ultimoRelatorio);
   $('btn-exportar-csv').classList.toggle('hidden', !ultimoRelatorio.length);
 }
 
 function renderResumoRelatorio(linhas){
   const somaPorGrupo = (tipos) => linhas.filter(l => tipos.includes(l.tipo)).reduce((s, l) => s + Number(l.valor), 0);
   const cartoes = [
-    { titulo: 'Total de créditos', valor: somaPorGrupo(gruposTipo.creditos), cor: 'var(--green)' },
-    { titulo: 'Total de débitos', valor: somaPorGrupo(gruposTipo.debitos), cor: 'var(--red)' },
-    { titulo: 'Juros pedagógicos pagos', valor: somaPorGrupo(gruposTipo.rendimentos), cor: 'var(--sun-2)' },
-    { titulo: 'Taxas e bônus', valor: somaPorGrupo(gruposTipo.taxas), cor: 'var(--coral)' },
-    { titulo: 'Total em PIX', valor: somaPorGrupo(gruposTipo.pix), cor: 'var(--mint)' },
-    { titulo: 'Nº de movimentações', valor: linhas.length, cor: 'var(--paper)', semMoeda: true }
+    { titulo: 'Total de créditos', valor: somaPorGrupo(gruposTipo.creditos), cor: 'green', icone: '💰' },
+    { titulo: 'Total de débitos', valor: somaPorGrupo(gruposTipo.debitos), cor: 'red', icone: '🏧' },
+    { titulo: 'Juros pedagógicos pagos', valor: somaPorGrupo(gruposTipo.rendimentos), cor: 'sun-2', icone: '📈' },
+    { titulo: 'Taxas e bônus', valor: somaPorGrupo(gruposTipo.taxas), cor: 'coral', icone: '⚠️' },
+    { titulo: 'Total em PIX', valor: somaPorGrupo(gruposTipo.pix), cor: 'mint', icone: '💸' },
+    { titulo: 'Nº de movimentações', valor: linhas.length, cor: 'violet', icone: '🧾', semMoeda: true }
   ];
   $('rel-resumo').innerHTML = cartoes.map(c => `
-    <div class="cartao" style="margin-bottom:0; text-align:center;">
-      <div style="font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em;">${c.titulo}</div>
-      <div class="mono" style="font-size:22px; font-weight:700; color:${c.cor}; margin-top:4px;">${c.semMoeda ? c.valor : fmt(c.valor)}</div>
+    <div class="cartao" style="margin-bottom:0; border-top-color:var(--${c.cor}); display:flex; align-items:center; gap:12px;">
+      <div style="font-size:26px;">${c.icone}</div>
+      <div>
+        <div style="font-size:11.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.06em;">${c.titulo}</div>
+        <div class="mono" style="font-size:21px; font-weight:700; color:var(--${c.cor});">${c.semMoeda ? c.valor : fmt(c.valor)}</div>
+      </div>
     </div>`).join('');
 }
 
@@ -1822,6 +1991,130 @@ function renderTabelaRelatorio(linhas){
       <td style="font-size:12.5px; color:var(--ink-soft);">${l.descricao || ''}</td>
       <td class="mono ${classe}" style="text-align:right;">${sinal} ${fmt(l.valor)}</td>
     </tr>`;
+  }).join('');
+}
+
+// ---- Gráfico de pizza: distribuição por tipo de movimentação
+let chartPizza = null;
+function renderGraficoPizza(linhas){
+  const canvas = $('grafico-pizza');
+  if (typeof Chart === 'undefined') { canvas.parentElement.innerHTML = '<p style="font-size:13px; color:var(--ink-soft);">Gráfico indisponível no momento.</p>'; return; }
+
+  const categorias = [
+    { rotulo: 'Depósitos',    tipos: ['deposito'],                             cor: corVar('green') },
+    { rotulo: 'Saques',       tipos: ['saque'],                                cor: corVar('red') },
+    { rotulo: 'PIX',          tipos: ['transferencia_enviada','transferencia_recebida'], cor: corVar('mint') },
+    { rotulo: 'Juros',        tipos: ['rendimento_automatico','rendimento_manual'],      cor: corVar('sun-2') },
+    { rotulo: 'Taxas/Bônus',  tipos: ['taxa_debito','taxa_bonus'],             cor: corVar('coral') },
+    { rotulo: 'Loja',         tipos: ['compra_loja','pix_qrcode'],             cor: corVar('violet') },
+    { rotulo: 'Estornos',     tipos: ['estorno_credito','estorno_debito','estorno_compra'], cor: corVar('pink') },
+  ];
+  const valores = categorias.map(c => linhas.filter(l => c.tipos.includes(l.tipo)).reduce((s,l) => s + Number(l.valor), 0));
+
+  const dados = categorias.map((c,i) => ({ rotulo: c.rotulo, cor: c.cor, valor: valores[i] })).filter(d => d.valor > 0);
+
+  if (chartPizza) chartPizza.destroy();
+  if (!dados.length) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    $('pizza-legenda').innerHTML = '<span style="color:var(--ink-soft); font-size:12.5px;">Sem movimentações no período.</span>';
+    return;
+  }
+
+  chartPizza = new Chart(canvas, {
+    type: 'doughnut',
+    data: {
+      labels: dados.map(d => d.rotulo),
+      datasets: [{ data: dados.map(d => d.valor), backgroundColor: dados.map(d => d.cor), borderWidth: 2, borderColor: corVar('bg-900') }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } }
+    }
+  });
+
+  $('pizza-legenda').innerHTML = dados.map(d => `
+    <span style="display:flex; align-items:center; gap:5px;">
+      <span style="width:10px; height:10px; border-radius:3px; background:${d.cor}; display:inline-block;"></span>
+      ${d.rotulo} <span class="mono" style="color:var(--ink-soft);">(${fmt(d.valor)})</span>
+    </span>`).join('');
+}
+
+// ---- Gráfico de linha: créditos x débitos por dia, ao longo do período
+let chartLinha = null;
+function renderGraficoLinha(linhas){
+  const canvas = $('grafico-linha');
+  if (typeof Chart === 'undefined') return;
+
+  const porDia = {};
+  linhas.forEach(l => {
+    const dia = l.criado_em.slice(0,10);
+    if (!porDia[dia]) porDia[dia] = { creditos: 0, debitos: 0 };
+    if (gruposTipo.creditos.includes(l.tipo)) porDia[dia].creditos += Number(l.valor);
+    if (gruposTipo.debitos.includes(l.tipo)) porDia[dia].debitos += Number(l.valor);
+  });
+  const dias = Object.keys(porDia).sort();
+  const rotulos = dias.map(d => new Date(d + 'T12:00:00').toLocaleDateString('pt-BR', { day:'2-digit', month:'2-digit' }));
+
+  if (chartLinha) chartLinha.destroy();
+  if (!dias.length) {
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    return;
+  }
+
+  const corTexto = corVar('ink-soft');
+  const corGrade = 'rgba(' + corVar('border-rgb') + ',0.12)';
+
+  chartLinha = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: rotulos,
+      datasets: [
+        { label: 'Créditos', data: dias.map(d => porDia[d].creditos), borderColor: corVar('green'), backgroundColor: corVar('green'), tension: 0.3, pointRadius: 3 },
+        { label: 'Débitos', data: dias.map(d => porDia[d].debitos), borderColor: corVar('coral'), backgroundColor: corVar('coral'), tension: 0.3, pointRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { color: corTexto, font: { family: 'Nunito' } } } },
+      scales: {
+        x: { ticks: { color: corTexto, font: { size: 10 } }, grid: { color: corGrade } },
+        y: { ticks: { color: corTexto, font: { size: 10 } }, grid: { color: corGrade } }
+      }
+    }
+  });
+}
+
+// ---- Tabela por turma, com barrinha colorida de volume
+function renderPorTurma(linhas){
+  const porTurma = {};
+  linhas.forEach(l => {
+    if (!porTurma[l.turma_nome]) porTurma[l.turma_nome] = { total: 0, movimentos: 0 };
+    porTurma[l.turma_nome].total += Math.abs(Number(l.valor));
+    porTurma[l.turma_nome].movimentos += 1;
+  });
+  const turmas = Object.entries(porTurma).sort((a,b) => b[1].total - a[1].total);
+  const cont = $('rel-por-turma');
+
+  if (!turmas.length) { cont.innerHTML = '<p style="color:var(--ink-soft); font-size:13px;">Sem movimentações no período.</p>'; return; }
+
+  const maiorTotal = Math.max(...turmas.map(t => t[1].total));
+  const cores = ['sun','coral','mint','violet','pink','green'];
+
+  cont.innerHTML = turmas.map(([nome, dados], i) => {
+    const pct = maiorTotal ? Math.round((dados.total / maiorTotal) * 100) : 0;
+    const cor = cores[i % cores.length];
+    return `
+      <div style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
+          <span><strong>${nome}</strong> <span style="color:var(--ink-soft);">(${dados.movimentos} movimentações)</span></span>
+          <span class="mono" style="font-weight:700; color:var(--${cor});">${fmt(dados.total)}</span>
+        </div>
+        <div style="background:rgba(var(--border-rgb),0.1); border-radius:6px; height:10px; overflow:hidden;">
+          <div style="width:${pct}%; height:100%; background:var(--${cor}); border-radius:6px;"></div>
+        </div>
+      </div>`;
   }).join('');
 }
 
@@ -1847,6 +2140,12 @@ let produtosCache = [];
 let carrinhoCaixa = [];
 
 async function abrirTelaLoja(){
+  document.querySelectorAll('.btn-aba-loja').forEach(btn => {
+    btn.classList.toggle('aba-loja-ativa', btn.dataset.abaLoja === 'config');
+  });
+  $('loja-aba-config').classList.remove('hidden');
+  $('loja-aba-caixa').classList.add('hidden');
+
   const { data: cfg } = await supabase.from('configuracoes').select('loja_ativa').eq('id', 1).single();
   $('loja-ativa-checkbox').checked = !!cfg?.loja_ativa;
 
@@ -1866,6 +2165,15 @@ async function abrirTelaLoja(){
   renderCarrinhoCaixa();
   await carregarPedidosLoja();
 }
+
+document.querySelectorAll('.btn-aba-loja').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.btn-aba-loja').forEach(b => b.classList.remove('aba-loja-ativa'));
+    btn.classList.add('aba-loja-ativa');
+    $('loja-aba-config').classList.toggle('hidden', btn.dataset.abaLoja !== 'config');
+    $('loja-aba-caixa').classList.toggle('hidden', btn.dataset.abaLoja !== 'caixa');
+  });
+});
 
 $('btn-salvar-loja-ativa').addEventListener('click', async () => {
   const ativa = $('loja-ativa-checkbox').checked;
